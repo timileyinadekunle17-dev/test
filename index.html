@@ -153,7 +153,10 @@
     });
 
     video.controls = true;
+    video.removeAttribute('muted');
+    video.defaultMuted = false;
     video.muted = false;
+    video.volume = 1;
     var playResult = video.play();
     if (playResult && typeof playResult.catch === 'function') {
       playResult.catch(function () {
