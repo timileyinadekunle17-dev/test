@@ -207,7 +207,7 @@
     var previous = section.querySelector('button[aria-label="Previous slide"]');
     var next = section.querySelector('button[aria-label="Next slide"]');
     if (slides.length < 2 || !previous || !next) return;
-    var current = Math.max(0, Math.min(slides.length - 1, Math.round(Math.abs(parseFloat((track.getAttribute('style') || '').match(/translateX\\((-?[0-9.]+)%\\)/)?.[1] || 0)) / 100)));
+    var current = Math.max(0, Math.min(slides.length - 1, Math.round(Math.abs(parseFloat((track.getAttribute('style') || '').match(/translateX\((-?[0-9.]+)%\)/)?.[1] || 0)) / 100)));
     function show(index) {
       current = (index + slides.length) % slides.length;
       track.style.transform = 'translateX(-' + (current * 100) + '%)';
@@ -240,7 +240,7 @@
       return /next slide/i.test(button.textContent || '') || /next client testimonial/i.test(button.getAttribute('aria-label') || '');
     });
     if (!previous || !next) return;
-    var styleTransform = (track.getAttribute('style') || '').match(/translate3d\\((-?[0-9.]+)px/);
+    var styleTransform = (track.getAttribute('style') || '').match(/translate3d\((-?[0-9.]+)px/);
     var initialOffset = styleTransform ? Math.abs(parseFloat(styleTransform[1])) : 0;
     var initialWidth = slides[0].getBoundingClientRect().width || 1;
     var current = Math.max(0, Math.min(slides.length - 1, Math.round(initialOffset / initialWidth)));
