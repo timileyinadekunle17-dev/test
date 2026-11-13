@@ -123,23 +123,36 @@
     if (!wrapper) return null;
     return Array.prototype.find.call(wrapper.querySelectorAll('button'), function (button) {
       var label = button.getAttribute('aria-label') || '';
-      return /^Play (client testimonial|sales proof video)/i.test(label);
+      return /^(Play|Pause) (client testimonial|sales proof video)/i.test(label);
     }) || null;
   }
 
-  function showOverlay(video) {
+  function setOverlayState(video, isPlaying) {
     var button = getOverlay(video);
-    if (button) button.hidden = false;
-  }
+    if (!button) return;
 
-  function hideOverlay(video) {
-    var button = getOverlay(video);
-    if (button) button.hidden = true;
+    var originalLabel = button.getAttribute('data-video-play-label');
+    if (!originalLabel) {
+      originalLabel = button.getAttribute('aria-label') || 'Play video';
+      originalLabel = originalLabel.replace(/^Pause /i, 'Play ');
+      button.setAttribute('data-video-play-label', originalLabel);
+    }
+
+    button.hidden = false;
+    button.setAttribute('aria-label', (isPlaying ? 'Pause ' : 'Play ') + originalLabel.replace(/^Play /i, ''));
+
+    var svg = button.querySelector('svg');
+    if (svg) {
+      svg.innerHTML = isPlaying
+        ? '<rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect>'
+        : '<polygon points="6 3 20 12 6 21 6 3"></polygon>';
+      svg.setAttribute('fill', 'currentColor');
+    }
   }
 
   document.addEventListener('click', function (event) {
     var button = event.target.closest && event.target.closest(
-      'button[aria-label^="Play client testimonial"], button[aria-label^="Play sales proof video"]'
+      'button[aria-label^="Play client testimonial"], button[aria-label^="Pause client testimonial"], button[aria-label^="Play sales proof video"], button[aria-label^="Pause sales proof video"]'
     );
     if (!button) return;
 
@@ -148,6 +161,11 @@
     if (!video) return;
 
     event.preventDefault();
+    if (!video.paused) {
+      video.pause();
+      return;
+    }
+
     document.querySelectorAll('video[data-testimonial-video], video[data-sales-proof]').forEach(function (otherVideo) {
       if (otherVideo !== video && !otherVideo.paused) otherVideo.pause();
     });
@@ -160,16 +178,16 @@
     var playResult = video.play();
     if (playResult && typeof playResult.catch === 'function') {
       playResult.catch(function () {
-        showOverlay(video);
+        setOverlayState(video, false);
       });
     }
   });
 
   document.querySelectorAll('video[data-testimonial-video], video[data-sales-proof]').forEach(function (video) {
-    video.addEventListener('play', function () { hideOverlay(video); });
-    video.addEventListener('pause', function () { showOverlay(video); });
-    video.addEventListener('ended', function () { showOverlay(video); });
-    video.addEventListener('error', function () { showOverlay(video); });
+    video.addEventListener('play', function () { setOverlayState(video, true); });
+    video.addEventListener('pause', function () { setOverlayState(video, false); });
+    video.addEventListener('ended', function () { setOverlayState(video, false); });
+    video.addEventListener('error', function () { setOverlayState(video, false); });
   });
 })();
 </script>
