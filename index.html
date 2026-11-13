@@ -304,9 +304,10 @@
   function initDetruthLoadMoreReviews() {
     var section = document.querySelector('#testimonials');
     if (!section || section.dataset.loadMoreReviewsReady === 'true') return;
-    var grid = section.querySelector('.grid.md\\:grid-cols-2.lg\\:grid-cols-3.gap-6');
     var button = section.querySelector('#detruth-load-more-reviews');
-    if (!grid || !button) return;
+    var buttonContainer = button && button.parentElement;
+    var grid = buttonContainer && buttonContainer.previousElementSibling;
+    if (!grid || !button || !grid.matches('.grid.md\\:grid-cols-2.lg\\:grid-cols-3.gap-6')) return;
     var template = grid.querySelector(':scope > .relative.overflow-hidden');
     if (!template) return;
     section.dataset.loadMoreReviewsReady = 'true';
