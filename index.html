@@ -1658,7 +1658,7 @@
    var vals=Array.from(card.querySelectorAll('span > strong')).map(function(el){return Number((el.textContent||'').replace(/[^0-9.]/g,''))||0;});
    return {resources:vals[0]||0,fee:vals[1]||0};
   }
-  function fmt(n){return '
+  function fmt(n){return '$'+n.toLocaleString('en-US',{maximumFractionDigits:2});}
   function updateSummary(){
    var resources=0,fees=0,names=[];
    selected.forEach(function(v){resources+=v.resources;fees+=v.fee;names.push(v.name);});
