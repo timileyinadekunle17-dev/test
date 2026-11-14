@@ -1617,165 +1617,101 @@
 (function(){
  function init(){
   var section=document.getElementById('pricing');
-  if(!section||section.dataset.interactionsReady==='true')return;
+  if(!section)return;
   var tabs=Array.from(section.querySelectorAll('[role="tab"][id^="pricing-tab-"]'));
   var grid=section.querySelector('#pricing-services');
   if(tabs.length!==4||!grid)return;
+  if(section.dataset.interactionsReady==='true')return;
   section.dataset.interactionsReady='true';
-  var newServices=[
-   {name:'Visibility Search Booster (VSB)',category:3,description:'Improve your store’s visibility in relevant search experiences.',resources:500,fee:300},
-   {name:'Seller Permit',category:2,description:'Support for seller permit requirements and store documentation.',resources:250,fee:105},
-   {name:'Core Web Vitals (CWV) Optimization',category:0,description:'Optimize loading, responsiveness and visual stability across your store.',resources:715,fee:250},
-   {name:'Checkout Extensibility (CE) Migration',category:1,description:'Migrate checkout customizations to Shopify Checkout Extensibility.',resources:1025,fee:450},
-   {name:'Delivery Duty Paid (DDP) & Cross-Border Localization',category:1,description:'Configure cross-border delivery duty and localized shopping experiences.',resources:110,fee:70},
-   {name:'Customer Acquisition Cost (CAC) & Attribution Auditing',category:3,description:'Review acquisition costs and attribution across your marketing channels.',resources:380,fee:125},
-   {name:'Stock Keeping Unit (SKU) & Inventory Rationalization',category:1,description:'Review SKU structure and inventory organization for clearer operations.',resources:400,fee:200},
-   {name:'Customer Lifetime Value (CLV / LTV) Retention Flows',category:1,description:'Set up retention flows designed to support repeat purchases and customer value.',resources:980,fee:320},
-   {name:'Conversions API (CAPI) & Server-Side Tracking',category:2,description:'Connect server-side conversion events to support more reliable tracking.',resources:550,fee:210},
-   {name:'Web Content Accessibility Guidelines (WCAG) Remediation',category:0,description:'Address accessibility issues against relevant WCAG requirements.',resources:670,fee:200},
-   {name:'Frontend Interaction Module',category:0,description:'Implement and refine interactive frontend components for your store.',resources:800,fee:500},
-   {name:'Search Engine Marketing (SEM)',category:3,description:'Set up and optimize paid search marketing activity.',resources:750,fee:350},
-   {name:'ReUpify',category:2,description:'ReUpify setup and integration for your store workflow.',resources:450,fee:180},
-   {name:'Robots.txt',category:0,description:'Configure and review robots.txt directives for search engine crawling.',resources:400,fee:100},
-   {name:'CartRevive',category:2,description:'CartRevive setup and integration for cart recovery workflows.',resources:600,fee:200}
+  var services=[
+   ['Visibility Search Booster (VSB)',3,'Improve your store visibility in relevant search experiences.',500,300],
+   ['Seller Permit',2,'Support for seller permit requirements and store documentation.',250,105],
+   ['Core Web Vitals (CWV) Optimization',0,'Optimize loading, responsiveness and visual stability across your store.',715,250],
+   ['Checkout Extensibility (CE) Migration',1,'Migrate checkout customizations to Shopify Checkout Extensibility.',1025,450],
+   ['Delivery Duty Paid (DDP) & Cross-Border Localization',1,'Configure cross-border duties and localized shopping experiences.',110,70],
+   ['Customer Acquisition Cost (CAC) & Attribution Auditing',3,'Review acquisition costs and attribution across marketing channels.',380,125],
+   ['Stock Keeping Unit (SKU) & Inventory Rationalization',1,'Review SKU structure and inventory organization.',400,200],
+   ['Customer Lifetime Value (CLV / LTV) Retention Flows',1,'Create retention flows to support repeat purchases and customer value.',980,320],
+   ['Conversions API (CAPI) & Server-Side Tracking',2,'Connect server-side conversion events for more reliable tracking.',550,210],
+   ['Web Content Accessibility Guidelines (WCAG) Remediation',0,'Address accessibility issues against relevant WCAG requirements.',670,200],
+   ['Frontend Interaction Module',0,'Implement and refine interactive frontend components.',800,500],
+   ['Search Engine Marketing (SEM)',3,'Set up and optimize paid search marketing activity.',750,350],
+   ['ReUpify',2,'ReUpify setup and integration for your store workflow.',450,180],
+   ['Robots.txt',0,'Configure robots.txt directives for search engine crawling.',400,100],
+   ['CartRevive',2,'CartRevive setup and integration for cart recovery.',600,200]
   ];
-  newServices.forEach(function(service,index){
+  var originals=Array.from(grid.querySelectorAll(':scope > article'));
+  var originalCategory={'Speed Optimization':0,'Google Merchant Center':3,'Apps & Integrations':2};
+  originals.forEach(function(card){
+   var b=card.querySelector('button[aria-label^="Select "]');
+   var name=b?b.getAttribute('aria-label').replace(/^Select\s+/,''):'';
+   card.dataset.pricingName=name;
+   card.dataset.pricingCategory=String(originalCategory[name]===undefined?0:originalCategory[name]);
+  });
+  function makeCard(svc,i){
+   var name=svc[0],cat=svc[1],desc=svc[2],res=svc[3],fee=svc[4];
    var card=document.createElement('article');
    card.className='group relative rounded-lg pricing-box bg-card transition-colors';
-   card.dataset.pricingCategory=String(service.category);
-   card.dataset.pricingName=service.name;
-   card.dataset.pricingSelected='false';
-   var main=document.createElement('button');
-   main.type='button';main.className='relative flex h-auto min-h-60 w-full flex-col items-center justify-center gap-2 whitespace-normal rounded-lg px-6 pb-4 pt-8 text-sm font-medium transition-colors hover:bg-muted/40';
-   main.setAttribute('aria-pressed','false');main.setAttribute('aria-label','Select '+service.name);
-   var marker=document.createElement('span');marker.className='pricing-selection absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full border border-border';main.appendChild(marker);
-   var icon=document.createElement('span');icon.className='pricing-icon mb-5 flex h-16 w-16 shrink-0 items-center justify-center';icon.setAttribute('aria-hidden','true');
-   icon.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="10" cy="17" r="2" fill="currentColor" stroke="none"/></svg>';
-   main.appendChild(icon);
-   var heading=document.createElement('h3');heading.className='text-lg font-bold leading-snug';heading.textContent=service.name;main.appendChild(heading);
-   var desc=document.createElement('p');desc.className='mt-3 text-sm leading-relaxed text-muted-foreground';desc.textContent=service.description;main.appendChild(desc);
-   var prices=document.createElement('span');prices.className='mt-auto flex w-full flex-wrap justify-center gap-x-5 gap-y-2 border-t border-border pt-4 text-xs';
-   var resources=document.createElement('span');resources.appendChild(document.createTextNode('Resources '));var resourceValue=document.createElement('strong');resourceValue.className='block text-lg text-foreground';resourceValue.textContent='
-  var categoryByName={
-   'Speed Optimization':'0',
-   'Google Merchant Center':'3',
-   'Apps & Integrations':'2'
-  };
-  articles.forEach(function(card){
-   var label=card.querySelector('button[aria-label^="Select "]');
-   var name=label?label.getAttribute('aria-label').replace(/^Select\s+/,''):'';
-   card.dataset.pricingCategory=categoryByName[name]||card.dataset.pricingCategory||'0';
-   card.dataset.pricingName=name;
-   card.dataset.pricingSelected='false';
-   if(label)label.setAttribute('aria-pressed','false');
-  });
-  var descriptions=[
-   'Error and bug resolution. Fixed fee only. This work resolves issues rather than generating sales.',
-   'Conversion-focused store improvements. Ask us to scope the right improvements for your store.',
-   'Connecting your store to the tools and systems your business needs.',
-   'Growth and marketing services, including product feed health and optimization.'
-  ];
-  var note=grid.previousElementSibling;
-  var empty=document.createElement('div');
-  empty.id='pricing-empty-category';
-  empty.hidden=true;
-  empty.className='rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center text-sm text-muted-foreground';
-  empty.textContent='There are no separately listed services in this category yet. Contact us on WhatsApp and we will discuss your requirements.';
-  grid.insertAdjacentElement('afterend',empty);
+   card.dataset.pricingName=name;card.dataset.pricingCategory=String(cat);card.dataset.pricingSelected='false';
+   var choose=document.createElement('button');choose.type='button';
+   choose.className='relative flex min-h-60 w-full flex-col items-center justify-center gap-2 rounded-lg px-6 pb-4 pt-8 text-sm font-medium transition-colors hover:bg-muted/40';
+   choose.setAttribute('aria-label','Select '+name);choose.setAttribute('aria-pressed','false');
+   var dot=document.createElement('span');dot.className='absolute right-3 top-3 h-6 w-6 rounded-full border border-border';choose.appendChild(dot);
+   var ico=document.createElement('span');ico.className='mb-5 flex h-16 w-16 items-center justify-center text-3xl';ico.setAttribute('aria-hidden','true');ico.textContent='✧';choose.appendChild(ico);
+   var h=document.createElement('h3');h.className='text-lg font-bold leading-snug';h.textContent=name;choose.appendChild(h);
+   var d=document.createElement('p');d.className='mt-3 text-sm leading-relaxed text-muted-foreground';d.textContent=desc;choose.appendChild(d);
+   var price=document.createElement('span');price.className='mt-auto flex w-full flex-wrap justify-center gap-x-5 gap-y-2 border-t border-border pt-4 text-xs';
+   [['Resources',res],['Service fee',fee]].forEach(function(pair){var item=document.createElement('span');item.appendChild(document.createTextNode(pair[0]+' '));var strong=document.createElement('strong');strong.className='block text-lg text-foreground';strong.textContent='$'+pair[1].toLocaleString('en-US');item.appendChild(strong);price.appendChild(item);});
+   choose.appendChild(price);card.appendChild(choose);
+   var detail=document.createElement('button');detail.type='button';detail.className='mb-4 inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium text-primary hover:bg-accent';detail.textContent='Scope details';detail.setAttribute('aria-expanded','false');detail.setAttribute('aria-controls','pricing-scope-'+i);card.appendChild(detail);
+   var panel=document.createElement('div');panel.id='pricing-scope-'+i;panel.hidden=true;panel.className='border-t border-border px-5 py-5 text-center text-sm text-muted-foreground';panel.textContent='The exact scope and deliverables will be confirmed before work begins.';card.appendChild(panel);
+   grid.appendChild(card);
+  }
+  services.forEach(makeCard);
+  var cards=Array.from(grid.querySelectorAll(':scope > article'));
+  var selected=new Map();
   var summary=section.querySelector('[aria-live="polite"].sticky');
-  var summarySpans=summary?summary.querySelectorAll(':scope > div:first-child > span, :scope > div:first-child > strong'):[];
+  var summaryText=summary?summary.querySelectorAll('span,strong'):[];
   var clear=summary?summary.querySelector('button'):null;
   var cta=summary?summary.querySelector('a[href*="wa.me"]'):null;
-  var selected=new Map();
-  function money(card,index){
-   var vals=Array.from(card.querySelectorAll('span > strong')).map(function(el){return Number((el.textContent||'').replace(/[^0-9.]/g,''))||0;});
-   return {resources:vals[0]||0,fee:vals[1]||0};
-  }
+  var note=grid.previousElementSibling;
+  var empty=document.getElementById('pricing-empty-category');
+  if(!empty){empty=document.createElement('div');empty.id='pricing-empty-category';empty.className='rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center text-sm text-muted-foreground';empty.textContent='No separately listed services in this category yet. Contact us on WhatsApp to discuss your requirements.';grid.insertAdjacentElement('afterend',empty);}
+  var descriptions=['Error and bug resolution. Fixed fee only. This work resolves issues rather than generating sales.','Conversion-focused store improvements.','Connecting your store to the tools and systems your business needs.','Growth and marketing services, including product feed health and optimization.'];
   function fmt(n){return '$'+n.toLocaleString('en-US',{maximumFractionDigits:2});}
-  function updateSummary(){
-   var resources=0,fees=0,names=[];
-   selected.forEach(function(v){resources+=v.resources;fees+=v.fee;names.push(v.name);});
-   if(summarySpans.length>=4){
-    summarySpans[0].textContent=selected.size+' selected';
-    summarySpans[1].textContent='Resources '+fmt(resources);
-    summarySpans[2].textContent='Fees '+fmt(fees);
-    summarySpans[3].textContent='Total '+fmt(resources+fees);
-   }
+  function update(){
+   var r=0,f=0,n=[];
+   selected.forEach(function(v){r+=v.r;f+=v.f;n.push(v.name);});
+   if(summaryText.length>=4){summaryText[0].textContent=selected.size+' selected';summaryText[1].textContent='Resources '+fmt(r);summaryText[2].textContent='Fees '+fmt(f);summaryText[3].textContent='Total '+fmt(r+f);}
    if(clear)clear.disabled=selected.size===0;
-   if(cta){
-    var msg='Hello De Impresa! I would like to discuss these selected services:\n'+(names.length?names.map(function(n){return '• '+n;}).join('\n'):'No specific services selected')+'\nResources: '+fmt(resources)+'\nService fees: '+fmt(fees)+'\nTotal: '+fmt(resources+fees);
-    cta.href='https://wa.me/2347079297488?text='+encodeURIComponent(msg);
-   }
+   if(cta){var msg='Hello De Impresa! I would like to discuss these selected services:\n'+(n.length?n.map(function(x){return '• '+x;}).join('\n'):'No specific services selected')+'\nResources: '+fmt(r)+'\nService fees: '+fmt(f)+'\nTotal: '+fmt(r+f);cta.href='https://wa.me/2347079297488?text='+encodeURIComponent(msg);}
   }
-  function showCategory(index){
-   tabs.forEach(function(tab,i){
-    var active=i===index;
-    tab.setAttribute('aria-selected',String(active));
-    tab.tabIndex=active?0:-1;
-    tab.classList.toggle('bg-primary',active);
-    tab.classList.toggle('text-primary-foreground',active);
-    tab.classList.toggle('hover:bg-primary/90',active);
-    tab.classList.toggle('border',!active);
-    tab.classList.toggle('border-input',!active);
-    tab.classList.toggle('bg-background',!active);
-   });
-   var visible=0;
-   articles.forEach(function(card){
-    var show=card.dataset.pricingCategory===String(index);
-    card.hidden=!show;
-    if(show)visible++;
-   });
-   empty.hidden=visible!==0;
-   grid.setAttribute('aria-labelledby',tabs[index].id);
-   if(note&&note.tagName==='P')note.lastChild.textContent=descriptions[index];
+  function show(i){
+   tabs.forEach(function(t,j){var active=i===j;t.setAttribute('aria-selected',String(active));t.tabIndex=active?0:-1;});
+   var count=0;
+   cards.forEach(function(card){var yes=card.dataset.pricingCategory===String(i);card.hidden=!yes;if(yes)count++;});
+   empty.hidden=count>0;
+   grid.setAttribute('aria-labelledby',tabs[i].id);
+   if(note&&note.tagName==='P')note.textContent=descriptions[i];
   }
-  tabs.forEach(function(tab,i){
-   tab.setAttribute('aria-controls','pricing-services');
-   tab.addEventListener('click',function(){showCategory(i);});
-   tab.addEventListener('keydown',function(e){
-    var next=i;
-    if(e.key==='ArrowRight')next=(i+1)%tabs.length;
-    else if(e.key==='ArrowLeft')next=(i+tabs.length-1)%tabs.length;
-    else if(e.key==='Home')next=0;
-    else if(e.key==='End')next=tabs.length-1;
-    else return;
-    e.preventDefault();tabs[next].focus();showCategory(next);
-   });
+  tabs.forEach(function(t,i){
+   t.setAttribute('aria-controls','pricing-services');
+   t.addEventListener('click',function(){show(i);});
+   t.addEventListener('keydown',function(e){var j=i;if(e.key==='ArrowRight')j=(i+1)%4;else if(e.key==='ArrowLeft')j=(i+3)%4;else if(e.key==='Home')j=0;else if(e.key==='End')j=3;else return;e.preventDefault();tabs[j].focus();show(j);});
   });
-  articles.forEach(function(card){
-   var select=card.querySelector('button[aria-label^="Select "]');
-   if(select)select.addEventListener('click',function(){
+  cards.forEach(function(card){
+   var choose=card.querySelector('button[aria-label^="Select "]');
+   if(choose)choose.addEventListener('click',function(){
     var name=card.dataset.pricingName;
-    if(selected.has(name)){selected.delete(name);card.dataset.pricingSelected='false';}
-    else {var cost=money(card);selected.set(name,{name:name,resources:cost.resources,fee:cost.fee});card.dataset.pricingSelected='true';}
-    select.setAttribute('aria-pressed',String(card.dataset.pricingSelected==='true'));
-    card.classList.toggle('ring-2',card.dataset.pricingSelected==='true');
-    card.classList.toggle('ring-primary',card.dataset.pricingSelected==='true');
-    updateSummary();
+    if(selected.has(name))selected.delete(name);
+    else {var vals=Array.from(card.querySelectorAll('strong')).map(function(x){return Number(x.textContent.replace(/[^0-9.]/g,''))||0;});selected.set(name,{name:name,r:vals[0]||0,f:vals[1]||0});}
+    var active=selected.has(name);card.dataset.pricingSelected=String(active);choose.setAttribute('aria-pressed',String(active));card.classList.toggle('ring-2',active);card.classList.toggle('ring-primary',active);update();
    });
    var detail=card.querySelector('button[aria-controls]');
-   if(detail){
-    var panel=document.getElementById(detail.getAttribute('aria-controls'));
-    detail.addEventListener('click',function(){
-     if(!panel)return;
-     var open=detail.getAttribute('aria-expanded')!=='true';
-     detail.setAttribute('aria-expanded',String(open));
-     panel.classList.toggle('hidden',!open);
-     panel.classList.remove('group-hover:block','group-focus-within:block');
-    });
-   }
+   if(detail)detail.addEventListener('click',function(){var panel=document.getElementById(detail.getAttribute('aria-controls'));if(!panel)return;var open=detail.getAttribute('aria-expanded')!=='true';detail.setAttribute('aria-expanded',String(open));panel.hidden=!open;});
   });
-  if(clear)clear.addEventListener('click',function(){
-   selected.clear();
-   articles.forEach(function(card){
-    card.dataset.pricingSelected='false';
-    card.classList.remove('ring-2','ring-primary');
-    var btn=card.querySelector('button[aria-label^="Select "]');
-    if(btn)btn.setAttribute('aria-pressed','false');
-   });
-   updateSummary();
-  });
-  showCategory(0);updateSummary();
+  if(clear)clear.addEventListener('click',function(){selected.clear();cards.forEach(function(card){card.dataset.pricingSelected='false';card.classList.remove('ring-2','ring-primary');var b=card.querySelector('button[aria-label^="Select "]');if(b)b.setAttribute('aria-pressed','false');});update();});
+  show(0);update();
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
