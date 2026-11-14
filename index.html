@@ -1447,7 +1447,8 @@
  nav.fixed.top-0 img[alt="De Impresa Logo"]{height:44px!important;max-height:44px!important}
  #de-impresa-mobile-menu-toggle{display:inline-flex!important;margin-left:auto;order:2;flex:0 0 44px}
  #primary-site-navigation{display:contents!important}
- #primary-site-navigation>a{display:none!important}
+ #primary-site-navigation>a[href^="#"]{display:none!important}
+ #primary-site-navigation>a[href*="/audit"],#primary-site-navigation>a[href^="https://wa.me/"]{display:flex!important}
  #primary-site-navigation>#de-impresa-language-picker{
    display:block!important;order:3;flex:1.3 1 0;min-width:0;margin:0!important;
  }
@@ -1461,7 +1462,7 @@
    align-items:center;min-height:38px;padding:8px 8px!important;font-size:12px!important;
    white-space:nowrap;
  }
- nav.fixed.top-0 > .container > .flex.items-center.justify-between > a[href^="https://wa.me/"]{
+ #primary-site-navigation > a[href^="https://wa.me/"]{
    order:5;display:flex!important;flex:1 1 0;min-width:0;justify-content:center;
    align-items:center;min-height:38px;padding:8px 8px!important;font-size:12px!important;
    white-space:nowrap;
@@ -1488,7 +1489,7 @@
   var closeIcon=document.getElementById('de-impresa-menu-close-icon');
   if(!toggle||!menu||!source||toggle.dataset.ready==='true')return;
   toggle.dataset.ready='true';
-  Array.prototype.forEach.call(source.querySelectorAll(':scope > a'),function(link){
+  Array.prototype.forEach.call(source.querySelectorAll(':scope > a[href^="#"]'),function(link){
    var item=link.cloneNode(true);
    item.removeAttribute('class');
    item.addEventListener('click',closeMenu);
