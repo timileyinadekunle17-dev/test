@@ -773,4 +773,96 @@
 })();
 </script>
 
+<script id="de-impresa-services-load-more">
+(function () {
+  'use strict';
+  function initServicesLoadMore() {
+    var section = document.getElementById('services');
+    if (!section || section.dataset.servicesLoadMoreReady === 'true') return;
+    var grid = section.querySelector('.grid');
+    var counter = section.querySelector('p');
+    var button = Array.from(section.querySelectorAll('button')).find(function (item) {
+      return /View 6 more services|Show less/i.test(item.textContent.trim());
+    });
+    if (!grid || !counter || !button) return;
+    var extraServices = [["App & Plugin Integration","Seamless integration of apps and plugins to enhance store functionality.","app-integration-CYAzuBQ0.jpg",null],["Payment Gateway & Checkout","Payment gateway setup and checkout optimization for higher conversions.","payment-gateway-Dk8O5cSk.jpg",null],["Conversion Funnel Optimization","Strategic funnel optimization to maximize customer journey conversions.","conversion-funnel-O5Q4l_K7.jpg","/services/conversion-rate-optimization"],["Google Merchant & Analytics","Google Merchant Center setup, product feed optimization, and analytics configuration.","analytics-GC16nrYx.jpg",null],["Google Search Console","Search Console setup and optimization to monitor site performance and indexing.","search-console-CS-k9lSF.jpg",null],["Dropshipping Solutions","End-to-end dropshipping store setup, supplier research, and automation.","dropshipping-38J6epnQ.jpg","/services/dropshipping-store-setup"],["Multi Channel Marketing","Integrated marketing across Facebook, Instagram, TikTok, Google, and more.","multi-channel-WIRh_a9K.jpg",null],["AI Shopping Optimization","Leverage artificial intelligence to optimize product recommendations and personalization.","ai-shopping-BPvmA8L9.jpg",null],["TikTok Shop","Complete TikTok Shop setup including live shopping, product listings, and social commerce.","tiktok-shop-Cv_LrZtP.jpg",null],["Instagram Shop","Instagram Shopping setup, product tagging, and shoppable posts integration.","instagram-shop-BSqumqjE.jpg",null],["Facebook Shop","Facebook Shop setup and management for seamless social commerce experiences.","facebook-shop-DL9ibVa3.jpg",null],["Google Ads","Expert Google Ads campaign management including Search, Shopping, Display, and YouTube.","google-ads-MDMi2mkK.jpg",null],["Pinterest Marketing","Pinterest marketing strategies including Pin creation, board optimization, and promoted pins.","pinterest-marketing-KMQvs22s.jpg",null],["Product Research & Validation","Data-driven product research and market validation for winning product selection.","product-research-PbjTyXZx.jpg",null],["Store Maintenance & Support","Ongoing store maintenance, technical support, and error resolution services.","store-maintenance-HO8DvRux.jpg",null],["Complete Auto Revenue Sales Funnel","A fully automated sales funnel that turns traffic into repeat revenue on autopilot.","auto-revenue-funnel-CxnFMuHk.jpg",null],["Agentic AI Optimization","Autonomous AI agents that optimize your store, support customers, and grow sales 24/7.","agentic-ai-optimization-D5eYD1Y6.jpg",null],["Ecommerce Growth Consulting","Strategic ecommerce consulting and growth strategies for scaling your business.","growth-consulting-B3Jq4cvd.jpg",null]];
+    var cards = [];
+    extraServices.forEach(function (service, index) {
+      var card = document.createElement('div');
+      card.className = 'bg-background rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all animate-fade-in-up cursor-pointer group';
+      card.style.animationDelay = ((index + 6) * 0.05) + 's';
+      card.style.display = 'none';
+      var media = document.createElement('div');
+      media.className = 'aspect-[3/2] w-full overflow-hidden bg-background';
+      var img = document.createElement('img');
+      img.src = 'https://detruthagency.com/assets/' + service[2];
+      img.alt = service[0];
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.sizes = '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw';
+      img.className = 'h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105';
+      media.appendChild(img);
+      var body = document.createElement('div');
+      body.className = 'p-6';
+      var heading = document.createElement('h3');
+      heading.className = 'font-display text-2xl text-foreground mb-3 group-hover:text-primary transition-colors';
+      heading.textContent = service[0];
+      var description = document.createElement('p');
+      description.className = 'font-body text-muted-foreground text-sm leading-relaxed mb-4';
+      description.textContent = service[1];
+      var footer = document.createElement('div');
+      footer.className = 'flex items-center justify-between gap-3';
+      var details = document.createElement('span');
+      details.className = 'font-body text-primary text-sm font-medium group-hover:underline';
+      details.textContent = 'View full details →';
+      footer.appendChild(details);
+      if (service[3]) {
+        var link = document.createElement('a');
+        link.className = 'font-body text-sm text-muted-foreground hover:text-primary transition-colors';
+        link.href = service[3];
+        link.textContent = 'Full service page →';
+        footer.appendChild(link);
+      }
+      body.appendChild(heading);
+      body.appendChild(description);
+      body.appendChild(footer);
+      card.appendChild(media);
+      card.appendChild(body);
+      grid.appendChild(card);
+      cards.push(card);
+    });
+    var shown = 6;
+    function update() {
+      cards.forEach(function (card, index) {
+        card.style.display = index < shown - 6 ? '' : 'none';
+      });
+      counter.textContent = 'Showing ' + shown + ' of 24 services';
+      if (shown >= 24) {
+        button.textContent = 'Show less';
+        button.dataset.expanded = 'true';
+      } else {
+        button.textContent = 'View 6 more services';
+        button.dataset.expanded = 'false';
+      }
+    }
+    button.addEventListener('click', function () {
+      if (button.dataset.expanded === 'true') {
+        shown = 6;
+        cards.forEach(function (card) { card.style.display = 'none'; });
+        update();
+        return;
+      }
+      shown = Math.min(24, shown + 6);
+      update();
+    });
+    section.dataset.servicesLoadMoreReady = 'true';
+    update();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initServicesLoadMore, { once: true });
+  } else {
+    initServicesLoadMore();
+  }
+})();
+</script>
 </body></html>
