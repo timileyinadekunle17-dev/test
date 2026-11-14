@@ -583,21 +583,24 @@
 })();
 </script>
 
-<script id="de-impresa-portfolio-load-more">
+<script <script id="de-impresa-portfolio-load-more">
 (function () {
   'use strict';
 
-  function initPortfolioLoadMore() {
+  function initPortfolioControls() {
     var section = document.getElementById('portfolio');
-    if (!section || section.dataset.loadMoreNichesReady === 'true') return;
+    if (!section || section.dataset.portfolioControlsReady === 'true') return;
 
     var grid = Array.from(section.querySelectorAll('.grid')).find(function (candidate) {
       return candidate.querySelector(':scope > a[href]');
     });
-    if (!grid) return;
-
-    var button = Array.from(section.querySelectorAll('button')).find(function (candidate) {
-      return /^Load More\s*\(/.test(candidate.textContent.trim());
+    var search = section.querySelector('input[aria-label="Search portfolio niches"]');
+    var buttons = Array.from(section.querySelectorAll('button'));
+    var loadButton = buttons.find(function (button) {
+      return /^Load More\s*\(/.test(button.textContent.trim());
+    });
+    var filterButtons = buttons.filter(function (button) {
+      return ['All', 'Shopify', 'WooCommerce', 'Wix', 'Squarespace', 'Email Marketing', 'SEO', 'Social Commerce', 'Dropshipping'].indexOf(button.textContent.trim()) !== -1;
     });
     var counter = Array.from(section.querySelectorAll('p')).find(function (candidate) {
       return /^Showing\s+\d+\s+of\s+100\s+niches$/i.test(candidate.textContent.trim());
@@ -606,7 +609,7 @@
       return candidate.textContent.indexOf('"@type":"ItemList"') !== -1 &&
         candidate.textContent.indexOf('De Impresa eCommerce Design Inspiration') !== -1;
     });
-    if (!button || !counter || !dataScript) return;
+    if (!grid || !search || !loadButton || !counter || filterButtons.length !== 9 || !dataScript) return;
 
     var items;
     try {
@@ -617,20 +620,26 @@
     }
     if (!Array.isArray(items) || items.length !== 100) return;
 
-    var shown = grid.querySelectorAll(':scope > a').length;
-    var batchSize = 16;
-    if (shown >= items.length) {
-      button.hidden = true;
-      counter.textContent = 'Showing ' + items.length + ' of ' + items.length + ' niches';
-      return;
-    }
+    var initialCards = Array.from(grid.querySelectorAll(':scope > a'));
+    if (initialCards.length !== 24) return;
 
-    section.dataset.loadMoreNichesReady = 'true';
+    var allCards = [];
+    var activeFilter = 'All';
+    var searchTerm = '';
+    var shown = 24;
+    var batchSize = 16;
+    var activeClass = 'px-5 py-2.5 rounded-full font-body text-sm font-semibold tracking-wide transition-all duration-300 border bg-gradient-to-r from-primary to-accent text-primary-foreground border-primary/60 shadow-[0_6px_20px_-6px_hsl(var(--primary)/0.7)] scale-[1.03]';
+    var inactiveClass = 'px-5 py-2.5 rounded-full font-body text-sm font-semibold tracking-wide transition-all duration-300 border bg-foreground/95 text-background border-foreground/20 hover:border-primary hover:text-primary hover:-translate-y-0.5';
+
+    function getPlatform(item) {
+      var match = String(item.name || '').match(/—\s*(.+?)\s+Design Inspiration$/);
+      return match ? match[1].trim() : '';
+    }
 
     function makeCard(item, index) {
       var match = String(item.name || '').match(/^(.+?) eCommerce Store — (.+?) Design Inspiration$/);
       var category = match ? match[1] : String(item.name || 'eCommerce');
-      var platform = match ? match[2] : 'eCommerce';
+      var platform = match ? match[2] : getPlatform(item);
       var imageUrl = String(item.image || '');
       var filename = imageUrl.split('/').pop() || '';
       var domain = filename.replace(/\.webp$/i, '');
@@ -643,7 +652,7 @@
       card.title = 'Open the ' + category + ' store at ' + domain + ' in a new tab';
       card.setAttribute('aria-label', category + ' ' + platform + ' store shown as design inspiration — visit ' + domain + ' in a new tab');
       card.className = 'group block bg-card rounded-xl overflow-hidden border border-border hover:border-primary/60 hover:shadow-[0_18px_40px_-18px_hsl(var(--primary)/0.55)] transition-all hover:-translate-y-1 animate-fade-in';
-      card.style.animationDelay = Math.max(0, index - 24) * 35 + 'ms';
+      card.style.animationDelay = Math.max(0, index - 23) * 25 + 'ms';
 
       var media = document.createElement('div');
       media.className = 'relative aspect-[400/220] overflow-hidden bg-muted';
@@ -671,8 +680,8 @@
       meta.className = 'flex items-center justify-between gap-2';
       var domainLabel = document.createElement('span');
       domainLabel.className = 'inline-flex items-center gap-1.5 min-w-0 font-body text-xs text-muted-foreground transition-colors group-hover:text-primary';
-      var externalIcon = grid.querySelector('.lucide-external-link');
-      if (externalIcon) domainLabel.appendChild(externalIcon.cloneNode(true));
+      var iconSource = initialCards[0].querySelector('.lucide-external-link');
+      if (iconSource) domainLabel.appendChild(iconSource.cloneNode(true));
       var domainText = document.createElement('span');
       domainText.className = 'line-clamp-1 group-hover:underline';
       domainText.textContent = domain;
@@ -692,43 +701,74 @@
       return card;
     }
 
-    button.addEventListener('click', function () {
-      var next = Math.min(shown + batchSize, items.length);
-      var fragment = document.createDocumentFragment();
-      var added = 0;
-
-      for (var index = shown; index < next; index += 1) {
-        var card = makeCard(items[index], index);
-        if (card) {
-          fragment.appendChild(card);
-          added += 1;
-        }
-      }
-
-      if (added) {
-        grid.appendChild(fragment);
-        shown = next;
-      }
-
-      var remaining = Math.max(0, items.length - shown);
-      counter.textContent = 'Showing ' + shown + ' of ' + items.length + ' niches';
-      if (remaining === 0) {
-        button.hidden = true;
-      } else {
-        button.textContent = 'Load More (' + remaining + ' remaining)';
-      }
+    items.forEach(function (item, index) {
+      allCards[index] = index < initialCards.length ? initialCards[index] : makeCard(item, index);
     });
 
-    var initialRemaining = items.length - shown;
-    button.textContent = initialRemaining > 0 ? 'Load More (' + initialRemaining + ' remaining)' : 'All niches shown';
-    counter.textContent = 'Showing ' + shown + ' of ' + items.length + ' niches';
-    if (initialRemaining <= 0) button.hidden = true;
+    function matches(item, index) {
+      var platform = getPlatform(item);
+      var domain = String(item.image || '').split('/').pop().replace(/\.webp$/i, '');
+      var category = String(item.name || '').replace(/\s+eCommerce Store\s+—.*$/, '');
+      var haystack = [category, platform, domain, item.name, item.description].join(' ').toLowerCase();
+      var filterMatch = activeFilter === 'All' || platform.toLowerCase() === activeFilter.toLowerCase();
+      return filterMatch && (!searchTerm || haystack.indexOf(searchTerm) !== -1) && !!allCards[index];
+    }
+
+    function render() {
+      var matchingIndexes = [];
+      items.forEach(function (item, index) {
+        if (matches(item, index)) matchingIndexes.push(index);
+      });
+
+      shown = Math.min(shown, matchingIndexes.length);
+      var visibleIndexes = matchingIndexes.slice(0, shown);
+      var fragment = document.createDocumentFragment();
+      visibleIndexes.forEach(function (index) {
+        fragment.appendChild(allCards[index]);
+      });
+      grid.replaceChildren(fragment);
+
+      counter.textContent = matchingIndexes.length
+        ? 'Showing ' + visibleIndexes.length + ' of ' + matchingIndexes.length + ' niches'
+        : 'No niches match your search';
+      var remaining = Math.max(0, matchingIndexes.length - visibleIndexes.length);
+      loadButton.textContent = remaining ? 'Load More (' + remaining + ' remaining)' : 'All niches shown';
+      loadButton.hidden = remaining === 0;
+    }
+
+    filterButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        activeFilter = button.textContent.trim();
+        filterButtons.forEach(function (candidate) {
+          var selected = candidate === button;
+          candidate.className = selected ? activeClass : inactiveClass;
+          candidate.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+        shown = 24;
+        render();
+      });
+      button.setAttribute('aria-pressed', button.textContent.trim() === 'All' ? 'true' : 'false');
+    });
+
+    search.addEventListener('input', function () {
+      searchTerm = search.value.trim().toLowerCase();
+      shown = 24;
+      render();
+    });
+
+    loadButton.addEventListener('click', function () {
+      shown += batchSize;
+      render();
+    });
+
+    section.dataset.portfolioControlsReady = 'true';
+    render();
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPortfolioLoadMore, { once: true });
+    document.addEventListener('DOMContentLoaded', initPortfolioControls, { once: true });
   } else {
-    initPortfolioLoadMore();
+    initPortfolioControls();
   }
 })();
 </script>
