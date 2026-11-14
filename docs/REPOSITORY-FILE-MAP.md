@@ -1,6 +1,6 @@
 # Repository file map
 
-This repository is a browser-captured copy of the De-Truth / Detruth Agency website. The files are intentionally kept at the repository root for now: the published page references its stylesheet by a relative root path, and moving runtime files without rewriting and testing every reference could break the page.
+This repository is the De Impresa Globals website repository. The files are intentionally kept at the repository root for now: the published page references its stylesheet by a relative root path, and moving runtime files without rewriting and testing every reference could break the page.
 
 ## Published website
 
