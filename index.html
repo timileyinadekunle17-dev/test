@@ -526,4 +526,60 @@
   else initDetruthLoadMoreReviews();
 })();
 </script>
+<script id="detruth-faq-functionality">
+(function () {
+  function initializeDetruthFaq() {
+    var section = document.getElementById('faq');
+    if (!section || section.dataset.faqReady === 'true') return;
+    var dataScript = Array.prototype.find.call(document.querySelectorAll('script[type="application/ld+json"]'), function (node) {
+      try {
+        var data = JSON.parse(node.textContent || '');
+        return data && data['@type'] === 'FAQPage' && Array.isArray(data.mainEntity);
+      } catch (error) { return false; }
+    });
+    if (!dataScript) return;
+    var data;
+    try { data = JSON.parse(dataScript.textContent || ''); } catch (error) { return; }
+    var answers = new Map(data.mainEntity.map(function (item) {
+      return [String(item.name || '').trim(), String(item.acceptedAnswer && item.acceptedAnswer.text || '')];
+    }));
+    var cards = Array.prototype.slice.call(section.querySelectorAll('[data-orientation="vertical"] > div[data-state]'));
+    cards.forEach(function (card) {
+      var button = card.querySelector('h3 > button[aria-controls]');
+      if (!button) return;
+      var panel = card.querySelector('[role="region"][id="' + button.getAttribute('aria-controls') + '"]');
+      if (!panel) return;
+      var answer = answers.get(button.textContent.trim());
+      if (answer && !panel.textContent.trim()) {
+        var paragraph = document.createElement('p');
+        paragraph.className = 'font-body text-muted-foreground leading-relaxed pb-5';
+        paragraph.textContent = answer;
+        panel.appendChild(paragraph);
+      }
+      button.addEventListener('click', function () {
+        var opening = button.getAttribute('aria-expanded') !== 'true';
+        cards.forEach(function (other) {
+          var otherButton = other.querySelector('h3 > button[aria-controls]');
+          var otherPanel = otherButton && other.querySelector('[role="region"][id="' + otherButton.getAttribute('aria-controls') + '"]');
+          if (!otherButton || !otherPanel) return;
+          var isOpen = other === card && opening;
+          otherButton.setAttribute('aria-expanded', String(isOpen));
+          otherButton.setAttribute('data-state', isOpen ? 'open' : 'closed');
+          other.setAttribute('data-state', isOpen ? 'open' : 'closed');
+          var heading = other.querySelector('h3');
+          if (heading) heading.setAttribute('data-state', isOpen ? 'open' : 'closed');
+          otherPanel.setAttribute('data-state', isOpen ? 'open' : 'closed');
+          otherPanel.hidden = !isOpen;
+        });
+      });
+    });
+    section.dataset.faqReady = 'true';
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDetruthFaq, { once: true });
+  } else {
+    initializeDetruthFaq();
+  }
+})();
+</script>
 </body></html>
