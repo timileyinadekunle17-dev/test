@@ -597,10 +597,10 @@
     if (!grid) return;
 
     var button = Array.from(section.querySelectorAll('button')).find(function (candidate) {
-      return /^Load More\\s*\\(/.test(candidate.textContent.trim());
+      return /^Load More\s*\(/.test(candidate.textContent.trim());
     });
     var counter = Array.from(section.querySelectorAll('p')).find(function (candidate) {
-      return /^Showing\\s+\\d+\\s+of\\s+100\\s+niches$/i.test(candidate.textContent.trim());
+      return /^Showing\s+\d+\s+of\s+100\s+niches$/i.test(candidate.textContent.trim());
     });
     var dataScript = Array.from(document.querySelectorAll('script[type="application/ld+json"]')).find(function (candidate) {
       return candidate.textContent.indexOf('"@type":"ItemList"') !== -1 &&
@@ -633,8 +633,8 @@
       var platform = match ? match[2] : 'eCommerce';
       var imageUrl = String(item.image || '');
       var filename = imageUrl.split('/').pop() || '';
-      var domain = filename.replace(/\\.webp$/i, '');
-      if (!/^https:\\/\\//i.test(imageUrl) || !/^[a-z0-9-]+(?:\\.[a-z0-9-]+)+$/i.test(domain)) return null;
+      var domain = filename.replace(/\.webp$/i, '');
+      if (!/^https:\/\//i.test(imageUrl) || !/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(domain)) return null;
 
       var card = document.createElement('a');
       card.href = 'https://' + domain;
