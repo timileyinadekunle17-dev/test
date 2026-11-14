@@ -1664,7 +1664,7 @@
   articles.forEach(function(card){
    var label=card.querySelector('button[aria-label^="Select "]');
    var name=label?label.getAttribute('aria-label').replace(/^Select\s+/,''):'';
-   card.dataset.pricingCategory=categoryByName[name]||'0';
+   card.dataset.pricingCategory=categoryByName[name]||card.dataset.pricingCategory||'0';
    card.dataset.pricingName=name;
    card.dataset.pricingSelected='false';
    if(label)label.setAttribute('aria-pressed','false');
