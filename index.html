@@ -1701,11 +1701,14 @@
   var descriptions=['Error and bug resolution. Fixed fee only. This work resolves issues rather than generating sales.','Conversion-focused store improvements.','Connecting your store to the tools and systems your business needs.','Growth and marketing services, including product feed health and optimization.'];
   function fmt(n){return '$'+n.toLocaleString('en-US',{maximumFractionDigits:2});}
   function update(){
-   var r=0,f=0,n=[];
-   selected.forEach(function(v){r+=v.r;f+=v.f;n.push(v.name);});
+   var r=0,f=0,lines=[];
+   selected.forEach(function(v){r+=v.r;f+=v.f;lines.push('• '+v.name+'\n  Resources: '+fmt(v.r)+'\n  Service fee: '+fmt(v.f)+'\n  Subtotal: '+fmt(v.r+v.f));});
    if(summaryText.length>=4){summaryText[0].textContent=selected.size+' selected';summaryText[1].textContent='Resources '+fmt(r);summaryText[2].textContent='Fees '+fmt(f);summaryText[3].textContent='Total '+fmt(r+f);}
    if(clear)clear.disabled=selected.size===0;
-   if(cta){var msg='Hello De Impresa! I would like to discuss these selected services:\n'+(n.length?n.map(function(x){return '• '+x;}).join('\n'):'No specific services selected')+'\nResources: '+fmt(r)+'\nService fees: '+fmt(f)+'\nTotal: '+fmt(r+f);cta.href='https://wa.me/2347079297488?text='+encodeURIComponent(msg);}
+   if(cta){
+    var msg='Hello De Impresa! I would like to request a quotation for the following selected services:\n\n'+(lines.length?lines.join('\n\n'):'No services selected yet.')+'\n\nTOTAL SUMMARY\nResources: '+fmt(r)+'\nService fees: '+fmt(f)+'\nGrand total: '+fmt(r+f);
+    cta.href='https://wa.me/2347079297488?text='+encodeURIComponent(msg);
+   }
   }
   function show(i){
    tabs.forEach(function(t,j){
@@ -1727,21 +1730,45 @@
   });
   cards.forEach(function(card){
    var choose=card.querySelector('button[aria-label^="Select "]');
-   if(choose)choose.addEventListener('click',function(){
+   var marker=choose?choose.querySelector('.pricing-selection,span.absolute.right-3.top-3'):null;
+   if(!marker&&choose){marker=document.createElement('span');marker.className='pricing-selection absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background';choose.appendChild(marker);}
+   function paint(active){
+    card.dataset.pricingSelected=String(active);
+    if(choose)choose.setAttribute('aria-pressed',String(active));
+    card.classList.toggle('ring-2',active);card.classList.toggle('ring-primary',active);
+    if(marker){
+     marker.classList.toggle('bg-primary',active);marker.classList.toggle('border-primary',active);marker.classList.toggle('text-primary-foreground',active);
+     marker.innerHTML=active?'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"></path></svg>':'';
+    }
+   }
+   function toggle(){
     var name=card.dataset.pricingName;
     if(selected.has(name))selected.delete(name);
-    else {var vals=Array.from(card.querySelectorAll('strong')).map(function(x){return Number(x.textContent.replace(/[^0-9.]/g,''))||0;});selected.set(name,{name:name,r:vals[0]||0,f:vals[1]||0});}
-    var active=selected.has(name);card.dataset.pricingSelected=String(active);choose.setAttribute('aria-pressed',String(active));card.classList.toggle('ring-2',active);card.classList.toggle('ring-primary',active);update();
+    else {
+     var vals=Array.from(card.querySelectorAll('strong')).map(function(x){return Number((x.textContent||'').replace(/[^0-9.]/g,''))||0;});
+     selected.set(name,{name:name,r:vals[0]||0,f:vals[1]||0});
+    }
+    paint(selected.has(name));update();
+   }
+   card.addEventListener('click',function(event){
+    if(event.target.closest('button[aria-controls]'))return;
+    if(event.target.closest('button[aria-label^="Select "]')||event.target===card||event.target.closest('article')===card)toggle();
    });
    var detail=card.querySelector('button[aria-controls]');
    if(detail)detail.addEventListener('click',function(){var panel=document.getElementById(detail.getAttribute('aria-controls'));if(!panel)return;var open=detail.getAttribute('aria-expanded')!=='true';detail.setAttribute('aria-expanded',String(open));panel.hidden=!open;});
+   paint(false);
   });
-  if(clear)clear.addEventListener('click',function(){selected.clear();cards.forEach(function(card){card.dataset.pricingSelected='false';card.classList.remove('ring-2','ring-primary');var b=card.querySelector('button[aria-label^="Select "]');if(b)b.setAttribute('aria-pressed','false');});update();});
+  if(clear)clear.addEventListener('click',function(){selected.clear();cards.forEach(function(card){card.dataset.pricingSelected='false';card.classList.remove('ring-2','ring-primary');var b=card.querySelector('button[aria-label^="Select "]');if(b)b.setAttribute('aria-pressed','false');var m=b&&b.querySelector('.pricing-selection,span.absolute.right-3.top-3');if(m){m.classList.remove('bg-primary','border-primary','text-primary-foreground');m.innerHTML='';}});update();});
   show(0);update();
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
-</script></body></html>+n.toLocaleString('en-US',{maximumFractionDigits:2});}
+</script><style id="de-impresa-pricing-selection-visuals">
+#pricing-services article[data-pricing-selected="true"]{outline:2px solid hsl(var(--primary));outline-offset:2px;border-radius:.75rem}
+#pricing-services article[data-pricing-selected="true"] .pricing-selection{background:hsl(var(--primary));border-color:hsl(var(--primary));color:hsl(var(--primary-foreground))}
+#pricing-services .pricing-selection{display:flex;align-items:center;justify-content:center;min-width:24px;min-height:24px;background:hsl(var(--background))}
+#pricing-services article[hidden]{display:none!important}
+</style></body></html>+n.toLocaleString('en-US',{maximumFractionDigits:2});}
   function updateSummary(){
    var resources=0,fees=0,names=[];
    selected.forEach(function(v){resources+=v.resources;fees+=v.fee;names.push(v.name);});
