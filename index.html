@@ -582,4 +582,155 @@
   }
 })();
 </script>
+
+<script id="de-impresa-portfolio-load-more">
+(function () {
+  'use strict';
+
+  function initPortfolioLoadMore() {
+    var section = document.getElementById('portfolio');
+    if (!section || section.dataset.loadMoreNichesReady === 'true') return;
+
+    var grid = Array.from(section.querySelectorAll('.grid')).find(function (candidate) {
+      return candidate.querySelector(':scope > a[href]');
+    });
+    if (!grid) return;
+
+    var button = Array.from(section.querySelectorAll('button')).find(function (candidate) {
+      return /^Load More\\s*\\(/.test(candidate.textContent.trim());
+    });
+    var counter = Array.from(section.querySelectorAll('p')).find(function (candidate) {
+      return /^Showing\\s+\\d+\\s+of\\s+100\\s+niches$/i.test(candidate.textContent.trim());
+    });
+    var dataScript = Array.from(document.querySelectorAll('script[type="application/ld+json"]')).find(function (candidate) {
+      return candidate.textContent.indexOf('"@type":"ItemList"') !== -1 &&
+        candidate.textContent.indexOf('De Impresa eCommerce Design Inspiration') !== -1;
+    });
+    if (!button || !counter || !dataScript) return;
+
+    var items;
+    try {
+      items = JSON.parse(dataScript.textContent).itemListElement;
+    } catch (error) {
+      console.error('Portfolio niche data could not be read.', error);
+      return;
+    }
+    if (!Array.isArray(items) || items.length !== 100) return;
+
+    var shown = grid.querySelectorAll(':scope > a').length;
+    var batchSize = 16;
+    if (shown >= items.length) {
+      button.hidden = true;
+      counter.textContent = 'Showing ' + items.length + ' of ' + items.length + ' niches';
+      return;
+    }
+
+    section.dataset.loadMoreNichesReady = 'true';
+
+    function makeCard(item, index) {
+      var match = String(item.name || '').match(/^(.+?) eCommerce Store — (.+?) Design Inspiration$/);
+      var category = match ? match[1] : String(item.name || 'eCommerce');
+      var platform = match ? match[2] : 'eCommerce';
+      var imageUrl = String(item.image || '');
+      var filename = imageUrl.split('/').pop() || '';
+      var domain = filename.replace(/\\.webp$/i, '');
+      if (!/^https:\\/\\//i.test(imageUrl) || !/^[a-z0-9-]+(?:\\.[a-z0-9-]+)+$/i.test(domain)) return null;
+
+      var card = document.createElement('a');
+      card.href = 'https://' + domain;
+      card.target = '_blank';
+      card.rel = 'noopener noreferrer';
+      card.title = 'Open the ' + category + ' store at ' + domain + ' in a new tab';
+      card.setAttribute('aria-label', category + ' ' + platform + ' store shown as design inspiration — visit ' + domain + ' in a new tab');
+      card.className = 'group block bg-card rounded-xl overflow-hidden border border-border hover:border-primary/60 hover:shadow-[0_18px_40px_-18px_hsl(var(--primary)/0.55)] transition-all hover:-translate-y-1 animate-fade-in';
+      card.style.animationDelay = Math.max(0, index - 24) * 35 + 'ms';
+
+      var media = document.createElement('div');
+      media.className = 'relative aspect-[400/220] overflow-hidden bg-muted';
+      var image = document.createElement('img');
+      image.src = imageUrl;
+      image.alt = category + ' eCommerce store banner — ' + platform + ' design inspiration (' + domain + ')';
+      image.title = category + ' — ' + domain;
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      image.width = 400;
+      image.height = 220;
+      image.className = 'w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105';
+      media.appendChild(image);
+
+      var body = document.createElement('div');
+      body.className = 'p-4';
+      var heading = document.createElement('h3');
+      heading.className = 'font-body font-semibold text-foreground mb-1 line-clamp-1';
+      heading.textContent = category;
+      var description = document.createElement('p');
+      description.className = 'font-body text-sm text-muted-foreground mb-2 line-clamp-2';
+      description.textContent = 'Design inspiration: the style and quality we bring to your ' + category.toLowerCase() + ' store.';
+
+      var meta = document.createElement('div');
+      meta.className = 'flex items-center justify-between gap-2';
+      var domainLabel = document.createElement('span');
+      domainLabel.className = 'inline-flex items-center gap-1.5 min-w-0 font-body text-xs text-muted-foreground transition-colors group-hover:text-primary';
+      var externalIcon = grid.querySelector('.lucide-external-link');
+      if (externalIcon) domainLabel.appendChild(externalIcon.cloneNode(true));
+      var domainText = document.createElement('span');
+      domainText.className = 'line-clamp-1 group-hover:underline';
+      domainText.textContent = domain;
+      domainLabel.appendChild(domainText);
+
+      var tag = document.createElement('span');
+      tag.className = 'font-body text-[10px] font-semibold uppercase tracking-wide text-primary border border-primary/40 rounded-full px-2 py-0.5 whitespace-nowrap';
+      tag.textContent = 'Inspiration';
+
+      meta.appendChild(domainLabel);
+      meta.appendChild(tag);
+      body.appendChild(heading);
+      body.appendChild(description);
+      body.appendChild(meta);
+      card.appendChild(media);
+      card.appendChild(body);
+      return card;
+    }
+
+    button.addEventListener('click', function () {
+      var next = Math.min(shown + batchSize, items.length);
+      var fragment = document.createDocumentFragment();
+      var added = 0;
+
+      for (var index = shown; index < next; index += 1) {
+        var card = makeCard(items[index], index);
+        if (card) {
+          fragment.appendChild(card);
+          added += 1;
+        }
+      }
+
+      if (added) {
+        grid.appendChild(fragment);
+        shown = next;
+      }
+
+      var remaining = Math.max(0, items.length - shown);
+      counter.textContent = 'Showing ' + shown + ' of ' + items.length + ' niches';
+      if (remaining === 0) {
+        button.hidden = true;
+      } else {
+        button.textContent = 'Load More (' + remaining + ' remaining)';
+      }
+    });
+
+    var initialRemaining = items.length - shown;
+    button.textContent = initialRemaining > 0 ? 'Load More (' + initialRemaining + ' remaining)' : 'All niches shown';
+    counter.textContent = 'Showing ' + shown + ' of ' + items.length + ' niches';
+    if (initialRemaining <= 0) button.hidden = true;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPortfolioLoadMore, { once: true });
+  } else {
+    initPortfolioLoadMore();
+  }
+})();
+</script>
+
 </body></html>
