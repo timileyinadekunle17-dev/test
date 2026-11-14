@@ -1,6 +1,6 @@
-# De-Truth Agency website
+# De Impresa Globals website
 
-This repository contains the captured website files published through GitHub Pages.
+This repository contains the website files published through GitHub Pages.
 
 ## Repository guide
 
