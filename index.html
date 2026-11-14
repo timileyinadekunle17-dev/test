@@ -832,8 +832,70 @@
       grid.appendChild(card);
       cards.push(card);
     });
+
+    var detailModal = document.createElement('div');
+    detailModal.id = 'de-impresa-service-detail-modal';
+    detailModal.className = 'fixed inset-0 z-[100] hidden items-center justify-center bg-black/75 p-4';
+    detailModal.setAttribute('role', 'dialog');
+    detailModal.setAttribute('aria-modal', 'true');
+    detailModal.setAttribute('aria-labelledby', 'de-impresa-service-detail-title');
+    detailModal.innerHTML = '<div class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-background p-6 md:p-8 shadow-2xl"><button type="button" data-close-service-details aria-label="Close details" class="absolute right-4 top-4 rounded-full p-2 text-foreground hover:bg-muted text-2xl leading-none">&times;</button><div class="pr-8"><p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">Our Services</p><h3 id="de-impresa-service-detail-title" class="mb-4 font-display text-2xl md:text-3xl font-bold text-foreground"></h3><p id="de-impresa-service-detail-description" class="mb-6 font-body text-muted-foreground leading-relaxed"></p><a href="https://wa.me/detruthagency" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90">Discuss this service</a></div></div>';
+    document.body.appendChild(detailModal);
+    var modalTitle = detailModal.querySelector('#de-impresa-service-detail-title');
+    var modalDescription = detailModal.querySelector('#de-impresa-service-detail-description');
+
+    function closeDetails() {
+      detailModal.classList.add('hidden');
+      detailModal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+    function openDetails(card) {
+      var title = card.querySelector('h3');
+      var description = card.querySelector('p');
+      if (!title || !description) return;
+      modalTitle.textContent = title.textContent.trim();
+      modalDescription.textContent = description.textContent.trim();
+      detailModal.classList.remove('hidden');
+      detailModal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      detailModal.querySelector('[data-close-service-details]').focus();
+    }
+    detailModal.addEventListener('click', function (event) {
+      if (event.target === detailModal || event.target.closest('[data-close-service-details]')) closeDetails();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !detailModal.classList.contains('hidden')) closeDetails();
+    });
+    function bindDetailTriggers() {
+      Array.from(grid.children).forEach(function (card) {
+        var triggers = Array.from(card.querySelectorAll('span')).filter(function (span) {
+          return span.textContent.trim().indexOf('View full details') === 0;
+        });
+        triggers.forEach(function (trigger) {
+          trigger.classList.add('service-details-trigger');
+          trigger.setAttribute('role', 'button');
+          trigger.setAttribute('tabindex', '0');
+          trigger.setAttribute('aria-label', 'View details for ' + (card.querySelector('h3') ? card.querySelector('h3').textContent.trim() : 'service'));
+          if (trigger.dataset.detailsBound === 'true') return;
+          trigger.dataset.detailsBound = 'true';
+          trigger.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            openDetails(card);
+          });
+          trigger.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              openDetails(card);
+            }
+          });
+        });
+      });
+    }
+
     var shown = 6;
     function update() {
+      bindDetailTriggers();
       cards.forEach(function (card, index) {
         card.style.display = index < shown - 6 ? '' : 'none';
       });
