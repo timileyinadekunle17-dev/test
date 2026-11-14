@@ -780,8 +780,9 @@
     var section = document.getElementById('services');
     if (!section || section.dataset.servicesLoadMoreReady === 'true') return;
     var grid = section.querySelector('.grid');
-    var counter = section.querySelector('p');
-    var button = Array.from(section.querySelectorAll('button')).find(function (item) {
+    var controls = section.querySelector('.mt-10');
+    var counter = controls && controls.querySelector('p');
+    var button = controls && Array.from(controls.querySelectorAll('button')).find(function (item) {
       return /View 6 more services|Show less/i.test(item.textContent.trim());
     });
     if (!grid || !counter || !button) return;
