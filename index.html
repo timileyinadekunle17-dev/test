@@ -554,11 +554,28 @@
       card.hidden = true;
       return card;
     }
+    var pageSize = 12;
+    var visibleReviews = 0;
     for (var i = 0; i < records.length; i++) {
       grid.appendChild(makeCard(records[i]));
     }
-    button.hidden = true;
-    button.setAttribute('aria-hidden', 'true');
+    function updateLoadMoreReviews() {
+      var addedCards = grid.querySelectorAll('[data-added-review="true"]');
+      Array.prototype.forEach.call(addedCards, function (card, index) {
+        card.hidden = index >= visibleReviews;
+      });
+      var totalVisible = grid.querySelectorAll(':scope > .relative.overflow-hidden:not([hidden])').length;
+      var totalReviews = grid.children.length;
+      var remaining = Math.max(0, totalReviews - totalVisible);
+      button.textContent = remaining ? 'Load More Reviews (' + totalVisible + ' of ' + totalReviews + ')' : 'All Reviews Shown';
+      button.hidden = remaining === 0;
+      button.removeAttribute('aria-hidden');
+    }
+    button.addEventListener('click', function () {
+      visibleReviews = Math.min(visibleReviews + pageSize, records.length);
+      updateLoadMoreReviews();
+    });
+    updateLoadMoreReviews();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDetruthLoadMoreReviews);
   else initDetruthLoadMoreReviews();
@@ -1117,4 +1134,75 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSalesStatsAnimation);
   else initSalesStatsAnimation();
 })();
-</script></body></html>
+</script><script id="De-Impresa-portfolio-and-all-reviews-fixes">
+(function () {
+  'use strict';
+  function initPortfolioAndAllReviews() {
+    // Make every "View/See Our Work" CTA reliably navigate to the real portfolio section.
+    var portfolio = document.getElementById('portfolio');
+    if (portfolio) {
+      var workLinks = Array.prototype.slice.call(document.querySelectorAll('a'));
+      workLinks.forEach(function (link) {
+        var label = [
+          link.textContent || '',
+          link.getAttribute('aria-label') || '',
+          link.getAttribute('title') || ''
+        ].join(' ');
+        if (/\b(view|see)\s+our\s+work\b/i.test(label)) {
+          link.setAttribute('href', '#portfolio');
+          link.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState(null, '', '#portfolio');
+            } else {
+              window.location.hash = 'portfolio';
+            }
+            portfolio.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+      });
+    }
+
+    // Animate the complete All Reviews collection without removing cards or
+    // interfering with the independent Load More control.
+    var section = document.getElementById('testimonials');
+    if (!section || section.dataset.allReviewsAnimationReady === 'true') return;
+    var heading = Array.prototype.find.call(section.querySelectorAll('h3'), function (node) {
+      return node.textContent.trim() === 'All Reviews';
+    });
+    var grid = heading && heading.nextElementSibling;
+    if (!grid || !grid.classList.contains('grid')) return;
+    section.dataset.allReviewsAnimationReady = 'true';
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return;
+    var paused = false;
+    var style = document.createElement('style');
+    style.textContent = '@keyframes deImpresaAllReviewChange{0%{opacity:.35;transform:translateY(9px)}100%{opacity:1;transform:translateY(0)}} #testimonials [data-all-review-animated="true"]{animation:deImpresaAllReviewChange .6s ease both}';
+    document.head.appendChild(style);
+    function rotateReviews() {
+      if (paused || document.hidden) return;
+      var cards = Array.prototype.filter.call(grid.children, function (card) {
+        return !card.hidden;
+      });
+      if (cards.length < 2) return;
+      var first = cards[0];
+      grid.appendChild(first);
+      first.setAttribute('data-all-review-animated', 'true');
+      window.setTimeout(function () {
+        first.removeAttribute('data-all-review-animated');
+      }, 650);
+    }
+    section.addEventListener('mouseenter', function () { paused = true; });
+    section.addEventListener('mouseleave', function () { paused = false; });
+    section.addEventListener('focusin', function () { paused = true; });
+    section.addEventListener('focusout', function (event) {
+      if (!section.contains(event.relatedTarget)) paused = false;
+    });
+    document.addEventListener('visibilitychange', function () { paused = document.hidden; });
+    window.setInterval(rotateReviews, 4500);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initPortfolioAndAllReviews);
+  else initPortfolioAndAllReviews();
+})();
+</script>
+</body></html>
