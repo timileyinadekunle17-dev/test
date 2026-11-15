@@ -1053,7 +1053,15 @@
       detailModal.classList.remove('hidden');
       detailModal.classList.add('flex');
       document.body.style.overflow = 'hidden';
-      detailModal.querySelector('[data-close-service-details]').focus();
+      var modalPanel = detailModal.firstElementChild;
+      // Always begin at the image and heading; focusing the footer close button
+      // previously caused the browser to jump to the bottom of this scrollable panel.
+      detailModal.scrollTop = 0;
+      if (modalPanel) modalPanel.scrollTop = 0;
+      var topCloseButton = detailModal.querySelector('button[aria-label="Close details"]');
+      if (topCloseButton) topCloseButton.focus({ preventScroll: true });
+      if (modalPanel) modalPanel.scrollTop = 0;
+      detailModal.scrollTop = 0;
     }
     detailModal.addEventListener('click', function (event) {
       if (event.target === detailModal || event.target.closest('[data-close-service-details]')) closeDetails();
