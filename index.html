@@ -188,6 +188,63 @@
   var input = document.getElementById('de-impresa-growth-goal');
   if (!form || !input || form.dataset.ready === 'true') return;
   form.dataset.ready = 'true';
+
+  // Rotate example goals in the input placeholder with a gentle typewriter effect.
+  var examples = [
+    'I want to turn more visitors into customers...',
+    'I want to grow my Shopify store...',
+    'I need more traffic from Google...',
+    'I want to improve my store conversion rate...',
+    'I need better email marketing and retention...',
+    'I want to automate more of my business...'
+  ];
+  var exampleIndex = 0;
+  var characterIndex = 0;
+  var deleting = false;
+  var animationTimer = null;
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function animatePlaceholder() {
+    if (document.activeElement === input || input.value || reducedMotion) return;
+    var phrase = examples[exampleIndex];
+    characterIndex += deleting ? -1 : 1;
+    input.placeholder = phrase.slice(0, Math.max(0, characterIndex));
+    var delay = deleting ? 32 : 58;
+    if (!deleting && characterIndex >= phrase.length) {
+      deleting = true;
+      delay = 1500;
+    } else if (deleting && characterIndex <= 0) {
+      deleting = false;
+      exampleIndex = (exampleIndex + 1) % examples.length;
+      delay = 350;
+    }
+    animationTimer = window.setTimeout(animatePlaceholder, delay);
+  }
+  function startPlaceholderAnimation() {
+    if (reducedMotion || input.value || document.activeElement === input || animationTimer) return;
+    animationTimer = window.setTimeout(function () {
+      animationTimer = null;
+      animatePlaceholder();
+    }, 450);
+  }
+  function stopPlaceholderAnimation() {
+    if (animationTimer) window.clearTimeout(animationTimer);
+    animationTimer = null;
+    input.placeholder = 'Tell us what you want to achieve...';
+  }
+  input.addEventListener('focus', stopPlaceholderAnimation);
+  input.addEventListener('input', function () {
+    if (input.value) stopPlaceholderAnimation();
+    else if (document.activeElement !== input) startPlaceholderAnimation();
+  });
+  input.addEventListener('blur', function () {
+    if (!input.value) {
+      characterIndex = 0;
+      deleting = false;
+      startPlaceholderAnimation();
+    }
+  });
+  if (!reducedMotion) startPlaceholderAnimation();
+
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     var goal = input.value.trim();
