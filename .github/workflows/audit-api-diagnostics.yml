@@ -32,7 +32,7 @@ jobs:
           console.log('CORS preflight passed.');
           NODE
 
-      - name: Run real audit and verify Lighthouse mobile and desktop
+      - name: Run real audit and verify Google PageSpeed Insights mobile and desktop
         run: |
           node --input-type=module <<'NODE'
           const response = await fetch('https://de-impresa-audit.vercel.app/api/audit', {
@@ -47,19 +47,19 @@ jobs:
           if (!result.success || !result.audit?.inspection?.finalUrl) {
             throw new Error('The API did not return real website inspection data.');
           }
-          const lighthouse = result.audit.lighthouse;
-          const psiStatus = result.audit.external?.pageSpeedInsights?.status || 'not reported';
+          const psi = result.audit.external?.pageSpeedInsights;
+          const psiStatus = psi?.status || 'not reported';
+          const mobile = psi?.results?.mobile;
+          const desktop = psi?.results?.desktop;
           console.log(JSON.stringify({
             result: 'INSPECTION_RETURNED',
             inspectedUrl: result.audit.inspection.finalUrl,
-            lighthouseStatus: lighthouse?.status || 'completed',
-            lighthouseReason: lighthouse?.reason || null,
-            mobileLighthouse: lighthouse?.mobile?.categories || null,
-            desktopLighthouse: lighthouse?.desktop?.categories || null,
-            pageSpeedInsights: psiStatus
+            pageSpeedInsights: psiStatus,
+            mobilePageSpeed: mobile?.categories || null,
+            desktopPageSpeed: desktop?.categories || null
           }, null, 2));
-          if (!lighthouse?.mobile || !lighthouse?.desktop) {
-            throw new Error(`Lighthouse mobile/desktop failed: ${lighthouse?.reason || lighthouse?.status || 'missing results'}`);
+          if (psiStatus !== 'completed' || mobile?.status !== 'measured' || desktop?.status !== 'measured') {
+            throw new Error('Google PageSpeed Insights mobile and desktop results were not both returned.');
           }
           if (psiStatus !== 'completed') {
             throw new Error(`PageSpeed Insights did not complete: ${psiStatus}`);
