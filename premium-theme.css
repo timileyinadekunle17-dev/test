@@ -288,3 +288,73 @@ footer a:hover { color:#8fe0d8 !important; }
 /* Consistent focus and readable text across tinted sections */
 #about *,#sales-proof *,#testimonials * { text-shadow:none; }
 #about .text-primary,#sales-proof .text-primary,#testimonials .text-primary { font-weight:800; }
+
+
+/* Pencil-like heading reveal: major titles are written on as they enter view */
+:root { --heading-write-accent:#168b9a; }
+#home { --heading-write-accent:#c6a15b; }
+#about { --heading-write-accent:#6659bd; }
+#platforms,#video-testimonials,#contact { --heading-write-accent:#168b9a; }
+#services,#portfolio,#faq { --heading-write-accent:#c17b50; }
+#pricing,#testimonials { --heading-write-accent:#27856d; }
+#team,#sales-proof { --heading-write-accent:#6258b5; }
+#certifications { --heading-write-accent:#3973b9; }
+#de-impresa-growth-prompt { --heading-write-accent:#b8f0e8; }
+footer { --heading-write-accent:#8fe0d8; }
+
+@keyframes heading-pencil-write {
+  from { clip-path:inset(0 100% 0 0); opacity:.72; }
+  to { clip-path:inset(0 0 0 0); opacity:1; }
+}
+@keyframes heading-pencil-line {
+  from { transform:translateX(-50%) scaleX(0); opacity:.45; }
+  to { transform:translateX(-50%) scaleX(1); opacity:1; }
+}
+#home h1,
+section[id] h2,
+footer h2 {
+  position:relative;
+  animation:heading-pencil-write 1.15s steps(32,end) both;
+  will-change:clip-path;
+}
+#home h1::after,
+section[id] h2::after,
+footer h2::after {
+  content:"";
+  position:absolute;
+  height:2px;
+  width:clamp(42px,18%,92px);
+  left:50%;
+  bottom:-.16em;
+  border-radius:99px;
+  pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--heading-write-accent),transparent);
+  transform:translateX(-50%) scaleX(0);
+  transform-origin:center;
+  animation:heading-pencil-line .65s ease-out .75s both;
+}
+@supports (animation-timeline:view()) {
+  #home h1,
+  section[id] h2,
+  footer h2 {
+    animation-timeline:view();
+    animation-range:entry 0% entry 62%;
+  }
+  #home h1::after,
+  section[id] h2::after,
+  footer h2::after {
+    animation-timeline:view();
+    animation-range:entry 8% entry 68%;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  #home h1,section[id] h2,footer h2 {
+    animation:none !important;
+    clip-path:none !important;
+    will-change:auto !important;
+  }
+  #home h1::after,section[id] h2::after,footer h2::after {
+    animation:none !important;
+    transform:translateX(-50%) scaleX(1) !important;
+  }
+}
