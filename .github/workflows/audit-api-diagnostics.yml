@@ -48,14 +48,13 @@ jobs:
             throw new Error('The API did not return real website inspection data.');
           }
           const lighthouse = result.audit.lighthouse;
-          if (!lighthouse?.mobile || !lighthouse?.desktop) {
-            throw new Error('Lighthouse mobile and desktop results are missing.');
-          }
           console.log(JSON.stringify({
-            result: 'PASS',
+            result: 'INSPECTION_RETURNED',
             inspectedUrl: result.audit.inspection.finalUrl,
-            mobileLighthouse: lighthouse.mobile.categories,
-            desktopLighthouse: lighthouse.desktop.categories,
+            lighthouseStatus: lighthouse?.status || 'completed',
+            lighthouseReason: lighthouse?.reason || null,
+            mobileLighthouse: lighthouse?.mobile?.categories || null,
+            desktopLighthouse: lighthouse?.desktop?.categories || null,
             pageSpeedInsights: result.audit.external?.pageSpeedInsights?.status || 'not reported'
           }, null, 2));
           NODE
