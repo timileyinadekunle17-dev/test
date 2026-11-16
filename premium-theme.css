@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+/* De Impresa Globals — refined editorial theme */
+:root {
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Manrope", Arial, sans-serif;
+  --premium-ink: #111111;
+  --premium-charcoal: #171717;
+  --premium-gold: #c6a15b;
+  --premium-ivory: #f8f7f4;
+}
+
+/* Clean white navigation to frame the logo */
+nav.fixed.top-0 {
+  background: rgba(255,255,255,.97) !important;
+  border-bottom: 1px solid rgba(198,161,91,.42) !important;
+  box-shadow: 0 8px 28px rgba(17,17,17,.07) !important;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+nav.fixed.top-0 img[alt="De Impresa Globals Logo"] {
+  filter: none !important;
+  drop-shadow: none !important;
+}
+nav.fixed.top-0 #primary-site-navigation > a {
+  color: #292929 !important;
+  font-weight: 700;
+  transition: color .25s ease, transform .25s ease;
+}
+nav.fixed.top-0 #primary-site-navigation > a:hover {
+  color: #a77d35 !important;
+  transform: translateY(-1px);
+}
+nav.fixed.top-0 #de-impresa-language-toggle {
+  color: #252525 !important;
+  background: #f7f5f0 !important;
+  border-color: rgba(198,161,91,.55) !important;
+}
+nav.fixed.top-0 #de-impresa-language-toggle svg { color: #a77d35 !important; }
+nav.fixed.top-0 #de-impresa-mobile-menu-toggle {
+  color: #222 !important;
+  background: #f7f5f0 !important;
+  border-color: rgba(198,161,91,.5) !important;
+}
+nav.fixed.top-0 #de-impresa-mobile-menu-toggle:hover { color: #9b742f !important; }
+#de-impresa-mobile-menu {
+  background: #fff !important;
+  border-color: rgba(198,161,91,.35) !important;
+}
+#de-impresa-mobile-menu a { color: #262626 !important; }
+
+/* The image-led hero sits on a deliberate charcoal canvas */
+#home {
+  background: #111;
+}
+#home > div {
+  background: #111;
+}
+#home img {
+  display: block;
+}
+
+/* Editorial typography with restrained gold details */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display) !important;
+  letter-spacing: -.018em;
+}
+body, button, input, textarea, select {
+  font-family: var(--font-body);
+}
+.text-gold-gradient {
+  background-image: linear-gradient(110deg, #a77d35 0%, #d7b875 48%, #a77d35 100%) !important;
+}
+
+/* Selected dark sections create rhythm without making the whole site black */
+#about,
+#sales-proof,
+#testimonials {
+  background: linear-gradient(145deg, #171717 0%, #202020 58%, #151515 100%) !important;
+  color: #f7f5f0 !important;
+  position: relative;
+  isolation: isolate;
+}
+#about::before,
+#sales-proof::before,
+#testimonials::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: .22;
+  background: radial-gradient(ellipse at 50% 0%, rgba(198,161,91,.22), transparent 62%);
+}
+#about h1, #about h2, #about h3,
+#sales-proof h1, #sales-proof h2, #sales-proof h3,
+#testimonials h1, #testimonials h2, #testimonials h3 {
+  color: #fff !important;
+}
+#about p, #sales-proof p, #testimonials p {
+  color: rgba(247,245,240,.76) !important;
+}
+#about .text-muted-foreground,
+#sales-proof .text-muted-foreground,
+#testimonials .text-muted-foreground {
+  color: rgba(247,245,240,.68) !important;
+}
+#about .bg-card,
+#sales-proof .bg-card,
+#testimonials .bg-card {
+  background: #242424 !important;
+  border-color: rgba(198,161,91,.24) !important;
+  color: #f7f5f0 !important;
+}
+#about a, #sales-proof a, #testimonials a {
+  transition: color .25s ease, transform .25s ease, border-color .25s ease;
+}
+
+/* Keep the audit experience and light content areas readable and untouched */
+#platforms, #audit, #services, #pricing, #team, #certifications,
+#portfolio, #video-testimonials, #faq, #contact {
+  scroll-margin-top: 5.5rem;
+}
+#services, #portfolio, #faq {
+  background-color: #f8f7f4;
+}
+#contact { background-color: #fff; }
+
+/* Refined cards and controls */
+#platforms a, #services a, #portfolio a,
+#pricing-services article, #team article {
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+}
+#platforms a:hover, #services a:hover, #portfolio a:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 38px rgba(17,17,17,.10);
+}
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+:focus-visible {
+  outline: 2px solid #c6a15b;
+  outline-offset: 3px;
+}
+
+/* Footer remains the visual anchor */
+footer {
+  background: #101010 !important;
+  border-top-color: rgba(198,161,91,.5) !important;
+}
+
+/* Gentle entrance polish; no content is hidden while animating */
+@media (prefers-reduced-motion: no-preference) {
+  #about h1, #sales-proof h2, #testimonials h2 {
+    animation: premium-rise .7s cubic-bezier(.2,.7,.2,1) both;
+  }
+  @keyframes premium-rise {
+    from { opacity: .55; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* Mobile navigation keeps its existing two-row layout */
+@media (max-width: 767px) {
+  nav.fixed.top-0 { background: rgba(255,255,255,.99) !important; }
+  nav.fixed.top-0 #primary-site-navigation {
+    background: transparent !important;
+  }
+}
