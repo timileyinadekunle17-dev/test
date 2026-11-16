@@ -9,25 +9,75 @@ permissions:
   contents: read
 
 jobs:
-  diagnose:
+  audit-api:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Inspect public API responses
+      - name: Verify public API CORS preflight
         run: |
           node --input-type=module <<'NODE'
-          const base = 'https://de-impresa-audit.vercel.app/api/audit';
           const origin = 'https://timileyinadekunle17-dev.github.io';
-          for (const [name, options] of [
-            ['preflight', { method: 'OPTIONS', headers: { Origin: origin, 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type' } }],
-            ['get', { method: 'GET', headers: { Origin: origin } }]
-          ]) {
-            const response = await fetch(base, options);
-            const body = await response.text();
-            console.log(JSON.stringify({
-              test: name,
-              status: response.status,
-              headers: Object.fromEntries(['content-type','access-control-allow-origin','x-vercel-id'].map(k => [k,response.headers.get(k)])),
-              body: body.slice(0, 2000)
-            }, null, 2));
+          const response = await fetch('https://de-impresa-audit.vercel.app/api/audit', {
+            method: 'OPTIONS',
+            headers: {
+              Origin: origin,
+              'Access-Control-Request-Method': 'POST',
+              'Access-Control-Request-Headers': 'content-type'
+            }
+          });
+          const allowed = response.headers.get('access-control-allow-origin');
+          if (response.status !== 204 || allowed !== origin) {
+            throw new Error(`CORS failed: status=${response.status}, allow-origin=${allowed}`);
           }
+          console.log('CORS preflight passed.');
+          NODE
+
+      - name: Run real audit and verify Lighthouse mobile and desktop
+        run: |
+          node --input-type=module <<'NODE'
+          const response = await fetch('https://de-impresa-audit.vercel.app/api/audit', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ url: 'https://example.com', format: 'json' }),
+            signal: AbortSignal.timeout(290000)
+          });
+          const body = await response.text();
+          if (!response.ok) throw new Error(`Audit failed with HTTP ${response.status}: ${body.slice(0, 1200)}`);
+          const result = JSON.parse(body);
+          if (!result.success || !result.audit?.inspection?.finalUrl) {
+            throw new Error('The API did not return real website inspection data.');
+          }
+          const lighthouse = result.audit.lighthouse;
+          if (!lighthouse?.mobile || !lighthouse?.desktop) {
+            throw new Error('Lighthouse mobile and desktop results are missing.');
+          }
+          console.log(JSON.stringify({
+            result: 'PASS',
+            inspectedUrl: result.audit.inspection.finalUrl,
+            mobileLighthouse: lighthouse.mobile.categories,
+            desktopLighthouse: lighthouse.desktop.categories,
+            pageSpeedInsights: result.audit.external?.pageSpeedInsights?.status || 'not reported'
+          }, null, 2));
+          NODE
+
+      - name: Generate and verify PDF report
+        run: |
+          node --input-type=module <<'NODE'
+          const response = await fetch('https://de-impresa-audit.vercel.app/api/audit', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ url: 'https://example.com', format: 'pdf' }),
+            signal: AbortSignal.timeout(290000)
+          });
+          if (!response.ok) {
+            const body = await response.text();
+            throw new Error(`PDF request failed with HTTP ${response.status}: ${body.slice(0, 1200)}`);
+          }
+          const type = response.headers.get('content-type') || '';
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          const signature = new TextDecoder().decode(bytes.slice(0, 5));
+          if (!type.includes('application/pdf') || signature !== '%PDF-') {
+            throw new Error(`PDF verification failed: content-type=${type}, signature=${signature}`);
+          }
+          console.log(`PDF report passed: ${bytes.length} bytes.`);
           NODE
