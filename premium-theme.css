@@ -175,3 +175,116 @@ footer {
     background: transparent !important;
   }
 }
+
+
+/* Section-by-section colour system: warm, varied surfaces with consistent contrast */
+#about {
+  background: linear-gradient(135deg,#eef0ff 0%,#f5f3ff 55%,#e9f4ff 100%) !important;
+  color: #202b49 !important;
+}
+#about h1,#about h2,#about h3 { color:#202b49 !important; }
+#about p,#about .text-muted-foreground { color:#56627c !important; }
+#about .text-gold-gradient { background-image:linear-gradient(110deg,#4267c8,#7557c9,#278da4) !important; }
+
+#platforms { background:linear-gradient(180deg,#f0f9fc 0%,#ffffff 100%) !important; }
+#platforms h2 { color:#18394d !important; }
+#platforms .text-gold-gradient { background-image:linear-gradient(110deg,#147f9c,#3e74bd) !important; }
+
+#services { background:linear-gradient(145deg,#fff4ec 0%,#fffaf5 100%) !important; }
+#services h2 { color:#453027 !important; }
+#services .text-gold-gradient { background-image:linear-gradient(110deg,#c16d45,#dc9860) !important; }
+#services a { background:#fff !important; border:1px solid #f0dfd4; }
+
+#audit { background:#eaf7f7 !important; border-color:#d4e9e9 !important; }
+#audit .audit-hero {
+  background:linear-gradient(135deg,#e9f7f7 0%,#eff5ff 58%,#f5f1ff 100%) !important;
+  color:#18394d !important;
+}
+#audit .audit-hero h2 { color:#18394d !important; }
+#audit .audit-hero .text-gold-gradient {
+  background-image:linear-gradient(100deg,#087f8c,#326fc2) !important;
+}
+#audit .audit-hero p { color:#526b7a !important; }
+#audit .audit-hero .border-audit-gold\/40 {
+  border-color:#a8d8d9 !important;
+  background:#dff2f1 !important;
+}
+#audit .audit-hero .text-audit-gold { color:#087f8c !important; }
+#audit iframe { background:transparent !important; }
+
+#pricing {
+  background:linear-gradient(145deg,#eaf6f0 0%,#f4faf6 100%) !important;
+  color:#183c32 !important;
+}
+#pricing h2 { color:#183c32 !important; }
+#pricing .text-primary { color:#197d69 !important; }
+#pricing .text-gold-gradient { background-image:linear-gradient(100deg,#197d69,#3a9c85) !important; }
+
+#team { background:linear-gradient(135deg,#f0efff 0%,#faf9ff 100%) !important; }
+#team h2 { color:#29264c !important; }
+#team .text-primary { color:#6258b5 !important; }
+
+#certifications { background:linear-gradient(145deg,#edf5ff 0%,#f7faff 100%) !important; }
+#certifications h2 { color:#203c5d !important; }
+#certifications .text-gradient-gold,
+#certifications .text-primary { color:#3973b9 !important; }
+
+#portfolio { background:linear-gradient(145deg,#fff1e9 0%,#fff9f5 100%) !important; }
+#portfolio h2 { color:#493326 !important; }
+#portfolio .text-gold-gradient { background-image:linear-gradient(100deg,#c16d45,#d99662) !important; }
+
+#video-testimonials { background:linear-gradient(135deg,#e9f6f8 0%,#f3f8ff 100%) !important; }
+#video-testimonials h2 { color:#1d4054 !important; }
+#video-testimonials .text-gold-gradient { background-image:linear-gradient(100deg,#087f8c,#3977bd) !important; }
+
+#sales-proof {
+  background:linear-gradient(145deg,#edf2ff 0%,#f5f0ff 100%) !important;
+  color:#202b49 !important;
+}
+#sales-proof h1,#sales-proof h2,#sales-proof h3 { color:#202b49 !important; }
+#sales-proof p,#sales-proof .text-muted-foreground { color:#56627c !important; }
+#sales-proof .bg-card { background:#fff !important; color:#202b49 !important; border-color:#dfe4f4 !important; }
+#sales-proof .text-gold-gradient { background-image:linear-gradient(100deg,#4267c8,#7657c9) !important; }
+#sales-proof .text-primary { color:#4267c8 !important; }
+
+#testimonials {
+  background:linear-gradient(145deg,#eaf5ef 0%,#f5faf6 100%) !important;
+  color:#1f4035 !important;
+}
+#testimonials h1,#testimonials h2,#testimonials h3 { color:#1f4035 !important; }
+#testimonials p,#testimonials .text-muted-foreground { color:#536d62 !important; }
+#testimonials .bg-card { background:#fff !important; color:#24463a !important; border-color:#d8e9df !important; }
+#testimonials .text-gold-gradient { background-image:linear-gradient(100deg,#247d65,#5b9d79) !important; }
+#testimonials .text-primary { color:#247d65 !important; }
+
+#faq { background:linear-gradient(145deg,#fbf4e9 0%,#fffaf2 100%) !important; }
+#faq h2 { color:#433729 !important; }
+#faq .text-gold-gradient { background-image:linear-gradient(100deg,#b07832,#cf9250) !important; }
+#faq [data-state] { background:#fff !important; border-color:#eee2d1 !important; }
+
+#de-impresa-growth-prompt {
+  background:linear-gradient(120deg,#0d6973 0%,#176f8c 55%,#365e9f 100%) !important;
+  color:#fff !important;
+}
+#de-impresa-growth-prompt h2,
+#de-impresa-growth-prompt p,
+#de-impresa-growth-prompt label { color:#fff !important; }
+#de-impresa-growth-prompt .de-impresa-growth-kicker { color:#d7f5f2 !important; }
+#de-impresa-growth-prompt input,
+#de-impresa-growth-prompt textarea,
+#de-impresa-growth-prompt select { color:#18394d !important; background:#fff !important; }
+
+#contact { background:linear-gradient(145deg,#eef6fb 0%,#f9fbfd 100%) !important; }
+#contact h2 { color:#203b50 !important; }
+#contact .text-gold-gradient { background-image:linear-gradient(100deg,#147f9c,#3977bd) !important; }
+
+footer {
+  background:linear-gradient(145deg,#142b3d 0%,#18394d 100%) !important;
+  border-top-color:#4b91a0 !important;
+}
+footer .text-neutral-400 { color:#d0dce4 !important; }
+footer a:hover { color:#8fe0d8 !important; }
+
+/* Consistent focus and readable text across tinted sections */
+#about *,#sales-proof *,#testimonials * { text-shadow:none; }
+#about .text-primary,#sales-proof .text-primary,#testimonials .text-primary { font-weight:800; }
