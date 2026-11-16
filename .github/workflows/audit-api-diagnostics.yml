@@ -48,6 +48,7 @@ jobs:
             throw new Error('The API did not return real website inspection data.');
           }
           const lighthouse = result.audit.lighthouse;
+          const psiStatus = result.audit.external?.pageSpeedInsights?.status || 'not reported';
           console.log(JSON.stringify({
             result: 'INSPECTION_RETURNED',
             inspectedUrl: result.audit.inspection.finalUrl,
@@ -55,8 +56,14 @@ jobs:
             lighthouseReason: lighthouse?.reason || null,
             mobileLighthouse: lighthouse?.mobile?.categories || null,
             desktopLighthouse: lighthouse?.desktop?.categories || null,
-            pageSpeedInsights: result.audit.external?.pageSpeedInsights?.status || 'not reported'
+            pageSpeedInsights: psiStatus
           }, null, 2));
+          if (!lighthouse?.mobile || !lighthouse?.desktop) {
+            throw new Error(`Lighthouse mobile/desktop failed: ${lighthouse?.reason || lighthouse?.status || 'missing results'}`);
+          }
+          if (psiStatus !== 'completed') {
+            throw new Error(`PageSpeed Insights did not complete: ${psiStatus}`);
+          }
           NODE
 
       - name: Generate and verify PDF report
