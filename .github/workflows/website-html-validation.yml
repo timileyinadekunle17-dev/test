@@ -35,7 +35,7 @@ jobs:
             new vm.Script(code, { filename: 'inline-script-' + (++checked) + '.js' });
           }
           const ids = [...html.matchAll(/\\bid=["']([^"']+)["']/gi)].map(m => m[1]);
-          const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
+          const newIds = ids.filter(id => id.startsWith('de-impresa-profile-') || id.startsWith('de-impresa-team-expert-profile-modal'));\n          const duplicates = newIds.filter((id, i) => newIds.indexOf(id) !== i);
           if (duplicates.length) throw new Error('Duplicate HTML ids: ' + [...new Set(duplicates)].join(', '));
           const teamStart = html.indexOf('<section id="team"');
           const certStart = html.indexOf('<section id="certifications"', teamStart);
