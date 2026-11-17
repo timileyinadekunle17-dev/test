@@ -819,30 +819,30 @@
 (function () {
   'use strict';
   var additions = [
-    {domain:'createandcraft.com', niche:'Arts & Crafts'},
-    {domain:'thesill.com', niche:'Houseplants & Plant Care'},
-    {domain:'provenwinnersdirect.com', niche:'Gardening & Plants'},
-    {domain:'lancasterarchery.com', niche:'Archery Equipment'},
-    {domain:'kastking.com', niche:'Fishing Gear'},
-    {domain:'nobltravel.com', niche:'Travel & Experiences'},
-    {domain:'cardosystems.com', niche:'Motorcycle Communication'},
-    {domain:'chemicalguys.com', niche:'Car Care & Detailing'},
-    {domain:'ohsnap.com', niche:'Phone Accessories'},
-    {domain:'conceptkart.com', niche:'Collectibles & Gaming'},
-    {domain:'sonoff.tech', niche:'Smart Home Technology'},
-    {domain:'agarolifestyle.com', niche:'Home Appliances'},
-    {domain:'compartes.com', niche:'Chocolate & Confectionery'},
-    {domain:'artoftea.com', niche:'Tea & Specialty Drinks'},
-    {domain:'bluebottlecoffee.com', niche:'Coffee & Brewing'},
-    {domain:'martie.com', niche:'Discount Grocery & Home'},
-    {domain:'lovevery.com', niche:'Child Development Toys'},
-    {domain:'primary.com', niche:'Kids Clothing'},
-    {domain:'burtsbeesbaby.com', niche:'Baby Clothing'},
+    {domain:'createandcraft.com', niche:'Arts & Crafts', category:'SEO'},
+    {domain:'thesill.com', niche:'Houseplants & Plant Care', category:'Social Commerce'},
+    {domain:'provenwinnersdirect.com', niche:'Gardening & Plants', platform:'Shopify'},
+    {domain:'lancasterarchery.com', niche:'Archery Equipment', category:'SEO'},
+    {domain:'kastking.com', niche:'Fishing Gear', platform:'Shopify'},
+    {domain:'nobltravel.com', niche:'Travel & Experiences', platform:'Shopify'},
+    {domain:'cardosystems.com', niche:'Motorcycle Communication', category:'Dropshipping'},
+    {domain:'chemicalguys.com', niche:'Car Care & Detailing', category:'Social Commerce'},
+    {domain:'ohsnap.com', niche:'Phone Accessories', category:'Dropshipping'},
+    {domain:'conceptkart.com', niche:'Collectibles & Gaming', platform:'Shopify'},
+    {domain:'sonoff.tech', niche:'Smart Home Technology', platform:'Shopify'},
+    {domain:'agarolifestyle.com', niche:'Home Appliances', category:'Dropshipping'},
+    {domain:'compartes.com', niche:'Chocolate & Confectionery', category:'SEO'},
+    {domain:'artoftea.com', niche:'Tea & Specialty Drinks', category:'Email Marketing'},
+    {domain:'bluebottlecoffee.com', niche:'Coffee & Brewing', category:'Email Marketing'},
+    {domain:'martie.com', niche:'Discount Grocery & Home', category:'Email Marketing'},
+    {domain:'lovevery.com', niche:'Child Development Toys', platform:'Shopify'},
+    {domain:'primary.com', niche:'Kids Clothing', category:'Social Commerce'},
+    {domain:'burtsbeesbaby.com', niche:'Baby Clothing', platform:'Shopify'},
     {domain:'bark.co', niche:'Dog Products & Supplies', platform:'Shopify'},
-    {domain:'supertails.com', niche:'Pet Supplies'},
-    {domain:'shokz.com', niche:'Audio & Headphones'},
-    {domain:'tifosioptics.com', niche:'Sports Eyewear'},
-    {domain:'takomogolf.com', niche:'Golf Equipment'}
+    {domain:'supertails.com', niche:'Pet Supplies', platform:'Shopify'},
+    {domain:'shokz.com', niche:'Audio & Headphones', platform:'Shopify'},
+    {domain:'tifosioptics.com', niche:'Sports Eyewear', platform:'Shopify'},
+    {domain:'takomogolf.com', niche:'Golf Equipment', platform:'Shopify'}
   ];
   function initPortfolio() {
     var section = document.getElementById('portfolio');
@@ -870,6 +870,8 @@
         card.setAttribute('aria-label', item.niche + ' store shown as design inspiration — visit ' + item.domain + ' in a new tab');
         if (item.platform) card.dataset.platform = item.platform;
         else delete card.dataset.platform;
+        if (item.category) card.dataset.category = item.category;
+        else delete card.dataset.category;
         if (image) {
           image.src = '/stores/' + item.domain + '.webp';
           image.alt = item.niche + ' eCommerce store design inspiration (' + item.domain + ')';
@@ -913,6 +915,7 @@
     var inactiveClass = ['bg-foreground/95','text-background','border-foreground/20'];
 
     function platformFor(card) {
+      if (card.dataset.category) return card.dataset.category.trim().toLowerCase();
       if (card.dataset.platform) return card.dataset.platform.trim().toLowerCase();
       var label = (card.getAttribute('aria-label') || '').toLowerCase();
       var categories = ['Shopify','WooCommerce','Wix','Squarespace','Email Marketing','SEO','Social Commerce','Dropshipping'];
