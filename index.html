@@ -180,9 +180,14 @@
       }) || (image && cleanText(image.alt).split(',')[0]) || 'Team specialist';
       var nameIndex = children.indexOf(name);
       var alias = nameIndex >= 0 ? children[nameIndex + 1] || '' : '';
-      var roles = nameIndex >= 0 ? children.slice(nameIndex + (alias ? 2 : 1)) : [];
-      roles = roles.flatMap(function (value) {
-        return value.split(/(?=\s{2,})/).map(cleanText);
+      var roleNodes = nameIndex >= 0
+        ? Array.from(card.children).slice(nameIndex + (alias ? 2 : 1))
+        : [];
+      var roles = roleNodes.flatMap(function (node) {
+        var nested = Array.from(node.querySelectorAll('span')).map(function (part) {
+          return cleanText(part.textContent);
+        }).filter(Boolean);
+        return nested.length ? nested : [cleanText(node.textContent)];
       }).filter(function (value) {
         return value && value !== alias && value !== name && value.length < 100;
       });
