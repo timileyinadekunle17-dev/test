@@ -236,7 +236,8 @@
       return certificationCards.filter(function (card) {
         var text = cleanText(card.textContent).toLowerCase();
         var key = name.replace(/^(Mr\.|Mrs\.|Miss|Ms\.)\s*/i, '').toLowerCase();
-        if (key.length < 5) return false;\n        if (text.includes(key)) return true;\n        var tokens = key.split(/\\s+/).filter(function (part) { return part.length > 5; });\n        return tokens.some(function (part) { return text.includes(part); });
+        if (key.length < 5) return false;
+        if (text.includes(key)) return true;\n        var tokens = key.split(/\s+/).filter(function (part) { return part.length > 5; });\n        return tokens.some(function (part) { return text.includes(part); });
       });
     }
     function openProfile(card) {
