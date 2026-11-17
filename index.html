@@ -145,6 +145,7 @@
     overlay.id = 'de-impresa-team-expert-profile-modal';
     overlay.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/65 p-3 sm:p-5';
     overlay.hidden = true;
+    overlay.style.display = 'none';
     overlay.innerHTML =
       '<div class="absolute inset-0" data-profile-close="true" aria-hidden="true"></div>' +
       '<div role="dialog" aria-modal="true" aria-labelledby="de-impresa-profile-name" aria-describedby="de-impresa-profile-description" tabindex="-1" class="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-card p-5 shadow-2xl sm:p-7">' +
@@ -315,12 +316,14 @@
         (data.alias ? ' (' + data.alias + ')' : '') + ', whose role is ' + data.role + '. Please share the next steps.';
       whatsapp.href = 'https://wa.me/2347079297488?text=' + encodeURIComponent(message);
       overlay.hidden = false;
+      overlay.style.display = 'flex';
       document.body.style.overflow = 'hidden';
       dialog.focus();
     }
     function closeProfile() {
       if (overlay.hidden) return;
       overlay.hidden = true;
+      overlay.style.display = 'none';
       document.body.style.overflow = '';
       if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
     }
