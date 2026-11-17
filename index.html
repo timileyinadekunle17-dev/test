@@ -642,50 +642,19 @@
         if (!source) return;
         var tile = document.createElement('div');
         tile.className = 'overflow-hidden rounded-xl border border-border bg-background';
-        var imageButton = document.createElement('button');
-        imageButton.type = 'button';
-        imageButton.className = 'group relative block w-full cursor-zoom-in bg-muted/30 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary';
-        imageButton.setAttribute('aria-label', 'View ' + certTitleText + ' in full width');
+        var imageLink = document.createElement('a');
+        imageLink.href = source.getAttribute('src');
+        imageLink.target = '_blank';
+        imageLink.rel = 'noopener noreferrer';
+        imageLink.className = 'block w-full cursor-pointer bg-muted/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary';
+        imageLink.setAttribute('aria-label', 'Open ' + certTitleText + ' certificate image in a new tab');
         var certImage = document.createElement('img');
         certImage.src = source.getAttribute('src');
         certImage.alt = source.alt || certTitleText + ' certificate';
         certImage.loading = 'lazy';
-        certImage.className = 'block h-auto max-h-56 w-full object-contain p-2 transition group-hover:scale-[1.01] sm:max-h-64';
-        imageButton.appendChild(certImage);
-        var zoomHint = document.createElement('span');
-        zoomHint.className = 'absolute bottom-3 right-3 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-primary shadow';
-        zoomHint.textContent = 'Click image to view full width';
-        imageButton.appendChild(zoomHint);
-        certImage.setAttribute('role', 'button');
-        certImage.setAttribute('tabindex', '0');
-        certImage.setAttribute('aria-label', 'Open ' + certTitleText + ' certificate in full width');
-        certImage.style.cursor = 'zoom-in';
-        certImage.addEventListener('click', function (event) {
-          event.preventDefault();
-          event.stopPropagation();
-          openCertificateViewer({
-            image: source.getAttribute('src'),
-            alt: source.alt,
-            issuer: issuerTextValue,
-            title: certTitleText,
-            description: detailParagraphs
-          });
-        });
-        certImage.addEventListener('keydown', function (event) {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            event.stopPropagation();
-            certImage.click();
-          }
-        });
-        imageButton.addEventListener('click', function (event) {
-          if (event.target === imageButton || event.target === zoomHint) {
-            event.preventDefault();
-            event.stopPropagation();
-            certImage.click();
-          }
-        });
-        tile.appendChild(imageButton);
+        certImage.className = 'block h-auto max-h-56 w-full object-contain p-2 sm:max-h-64';
+        imageLink.appendChild(certImage);
+        tile.appendChild(imageLink);
         var copy = document.createElement('div');
         copy.className = 'space-y-2 p-4 sm:p-5';
         var issuerLabel = document.createElement('p');
