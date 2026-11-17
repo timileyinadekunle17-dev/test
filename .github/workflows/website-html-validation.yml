@@ -25,29 +25,31 @@ jobs:
           const fs = require('node:fs');
           const vm = require('node:vm');
           const html = fs.readFileSync('index.html', 'utf8');
-          const scripts = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)];
+          const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
           let checked = 0;
           for (const match of scripts) {
-            const attrs = match[1];
-            if (/type=["']application\\/ld\\+json["']/i.test(attrs)) continue;
+            if (/type=["']application\/ld\+json["']/i.test(match[1])) continue;
             const code = match[2].trim();
             if (!code) continue;
             new vm.Script(code, { filename: 'inline-script-' + (++checked) + '.js' });
           }
-          const ids = [...html.matchAll(/\\bid=["']([^"']+)["']/gi)].map(m => m[1]);
-          const newIds = ids.filter(id => id.startsWith('de-impresa-profile-') || id.startsWith('de-impresa-team-expert-profile-modal'));\n          const duplicates = newIds.filter((id, i) => newIds.indexOf(id) !== i);
-          if (duplicates.length) throw new Error('Duplicate HTML ids: ' + [...new Set(duplicates)].join(', '));
+          const ids = [...html.matchAll(/\bid=["']([^"']+)["']/gi)].map(m => m[1]);
+          const newIds = ids.filter(id => id.startsWith('de-impresa-profile-') || id.startsWith('de-impresa-team-expert-profile-modal'));
+          const duplicates = newIds.filter((id, i) => newIds.indexOf(id) !== i);
+          if (duplicates.length) throw new Error('Duplicate new HTML ids: ' + [...new Set(duplicates)].join(', '));
           const teamStart = html.indexOf('<section id="team"');
           const certStart = html.indexOf('<section id="certifications"', teamStart);
           if (teamStart < 0 || certStart < 0) throw new Error('Team or certification section missing');
           const team = html.slice(teamStart, certStart);
-          const profileCards = [...team.matchAll(/<button\\b[^>]*>[\\s\\S]*?<img[^>]*class=["'][^"']*team-profile-image[^"']*["'][\\s\\S]*?<\\/button>/gi)];
-          if (profileCards.length < 4) throw new Error('Expected team profile cards were not found');
-          if (!html.includes('de-impresa-team-expert-profile-modal-script') || !html.includes('de-impresa-profile-whatsapp')) {
-            throw new Error('Team profile modal implementation is incomplete');
+          const profileCards = [...team.matchAll(/<button\b[^>]*>[\s\S]*?<img[^>]*class=["'][^"']*team-profile-image[^"']*["'][\s\S]*?<\/button>/gi)];
+          if (profileCards.length !== 14) throw new Error('Expected 14 team profile cards; found ' + profileCards.length);
+          const modalStart = html.indexOf('<script id="de-impresa-team-expert-profile-modal-script">');
+          const modalEnd = html.indexOf('</script>', modalStart);
+          if (modalStart < 0 || modalEnd < 0) throw new Error('Team profile modal script missing');
+          const modal = html.slice(modalStart, modalEnd);
+          if (!modal.includes('de-impresa-profile-whatsapp') || !modal.includes('Hello De Impresa Globals!')) {
+            throw new Error('Team profile modal contact branding is incomplete');
           }
-          if (/DETRUTH AGENCY|Detruth Agency/i.test(html.slice(html.indexOf('de-impresa-team-expert-profile-modal-script'), html.indexOf('</script>', html.indexOf('de-impresa-team-expert-profile-modal-script'))))) {
-            throw new Error('Outdated agency branding remains in team profile modal');
-          }
-          console.log('Validated ' + checked + ' inline scripts and ' + profileCards.length + ' team profile cards.');
+          if (/DETRUTH AGENCY|Detruth Agency/i.test(modal)) throw new Error('Outdated agency branding remains in team profile modal');
+          console.log('Validated ' + checked + ' inline scripts and all ' + profileCards.length + ' team profile cards.');
           NODE
