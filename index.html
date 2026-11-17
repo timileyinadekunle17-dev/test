@@ -852,7 +852,7 @@
     var grid = controls && controls.nextElementSibling;
     if (!search || !grid || !grid.classList.contains('grid')) return;
     var categoryWrap = controls.querySelector('div.flex.flex-wrap');
-    var categoryButtons = categoryWrap ? Array.from(categoryWrap.querySelectorAll('button')) : [];
+    var buttons = categoryWrap ? Array.from(categoryWrap.querySelectorAll('button')) : [];
     var template = grid.querySelector(':scope > a');
     if (!template) return;
 
@@ -861,15 +861,15 @@
         var card = template.cloneNode(true);
         var url = 'https://' + item.domain;
         var image = card.querySelector('img');
-        var visual = card.querySelector('.relative.aspect-\\[400\\/220\\]');
         var overlay = card.querySelector('.absolute.inset-0');
         if (overlay) overlay.remove();
         card.href = url;
         card.target = '_blank';
         card.rel = 'noopener noreferrer';
         card.title = 'Open the ' + item.niche + ' store at ' + item.domain + ' in a new tab';
-        card.setAttribute('aria-label', item.niche + (item.platform ? ' ' + item.platform : '') + ' store shown as design inspiration — visit ' + item.domain + ' in a new tab');
-        card.dataset.platform = item.platform || '';
+        card.setAttribute('aria-label', item.niche + ' store shown as design inspiration — visit ' + item.domain + ' in a new tab');
+        if (item.platform) card.dataset.platform = item.platform;
+        else delete card.dataset.platform;
         if (image) {
           image.src = '/stores/' + item.domain + '.webp';
           image.alt = item.niche + ' eCommerce store design inspiration (' + item.domain + ')';
@@ -884,8 +884,6 @@
         if (description) description.textContent = 'Design inspiration: explore the products, presentation and shopping experience of this ' + item.niche.toLowerCase() + ' store.';
         var domainLabel = card.querySelector('span.line-clamp-1');
         if (domainLabel) domainLabel.textContent = item.domain;
-        var badge = card.querySelector('span.whitespace-nowrap');
-        if (badge) badge.textContent = 'Inspiration';
         card.style.animationDelay = '0s';
         grid.appendChild(card);
       });
@@ -907,7 +905,7 @@
       loadWrap.appendChild(loadMore);
       grid.insertAdjacentElement('afterend', loadWrap);
     }
-    section.dataset.portfolioControlsReady = 'true';
+
     var activeCategory = 'All';
     var visibleLimit = 16;
     var pageSize = 16;
@@ -915,17 +913,24 @@
     var inactiveClass = ['bg-foreground/95','text-background','border-foreground/20'];
 
     function platformFor(card) {
-      if (card.dataset.platform) return card.dataset.platform.toLowerCase();
-      var label = card.getAttribute('aria-label') || '';
-      var match = label.match(/\b(Shopify|WooCommerce|Wix|Squarespace|Email Marketing|SEO|Social Commerce|Dropshipping)\s+store\b/i);
-      return match ? match[1].toLowerCase() : '';
+      if (card.dataset.platform) return card.dataset.platform.trim().toLowerCase();
+      var label = (card.getAttribute('aria-label') || '').toLowerCase();
+      var categories = ['Shopify','WooCommerce','Wix','Squarespace','Email Marketing','SEO','Social Commerce','Dropshipping'];
+      for (var i = 0; i < categories.length; i++) {
+        if (label.indexOf(categories[i].toLowerCase() + ' store') !== -1) {
+          card.dataset.platform = categories[i].toLowerCase();
+          return card.dataset.platform;
+        }
+      }
+      return '';
     }
+
     function render() {
       var query = (search.value || '').trim().toLowerCase();
       var matches = cards.filter(function (card) {
         var categoryMatches = activeCategory === 'All' || platformFor(card) === activeCategory.toLowerCase();
         var searchable = (card.textContent + ' ' + (card.getAttribute('aria-label') || '') + ' ' + (card.getAttribute('href') || '')).toLowerCase();
-        return categoryMatches && (!query || searchable.includes(query));
+        return categoryMatches && (!query || searchable.indexOf(query) !== -1);
       });
       var visibleCount = Math.min(visibleLimit, matches.length);
       var visibleSet = new Set(matches.slice(0, visibleCount));
@@ -940,11 +945,12 @@
       loadMore.disabled = remaining === 0;
       loadMore.textContent = remaining ? 'Load More (' + remaining + ' remaining)' : 'All stores shown';
     }
-    categoryButtons.forEach(function (button) {
+
+    buttons.forEach(function (button) {
       button.addEventListener('click', function () {
-        activeCategory = (button.textContent || '').trim();
+        activeCategory = (button.textContent || '').replace(/\\s+/g, ' ').trim();
         visibleLimit = pageSize;
-        categoryButtons.forEach(function (item) {
+        buttons.forEach(function (item) {
           var selected = item === button;
           activeClass.forEach(function (name) { item.classList.toggle(name, selected); });
           inactiveClass.forEach(function (name) { item.classList.toggle(name, !selected); });
@@ -962,6 +968,7 @@
       visibleLimit += pageSize;
       render();
     });
+    section.dataset.portfolioControlsReady = 'true';
     render();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initPortfolio);
