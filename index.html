@@ -820,57 +820,74 @@
     var section = document.getElementById('portfolio');
     if (!section || section.dataset.portfolioControlsReady === 'true') return;
 
-    var grid = Array.from(section.querySelectorAll('.grid')).find(function (candidate) {
+    var grids = Array.from(section.querySelectorAll('.grid'));
+    var grid = grids.find(function (candidate) {
       return candidate.querySelector(':scope > a[href]');
     });
     var search = section.querySelector('input[aria-label="Search portfolio niches"]');
     var buttons = Array.from(section.querySelectorAll('button'));
-    var loadButton = buttons.find(function (button) {
-      return /^Load More\s*\(/.test(button.textContent.trim());
-    });
+    var filterNames = ['All', 'Shopify', 'WooCommerce', 'Wix', 'Squarespace', 'Email Marketing', 'SEO', 'Social Commerce', 'Dropshipping'];
     var filterButtons = buttons.filter(function (button) {
-      return ['All', 'Shopify', 'WooCommerce', 'Wix', 'Squarespace', 'Email Marketing', 'SEO', 'Social Commerce', 'Dropshipping'].indexOf(button.textContent.trim()) !== -1;
+      return filterNames.indexOf(button.textContent.trim()) !== -1;
     });
-    var counter = Array.from(section.querySelectorAll('p')).find(function (candidate) {
-      return /^Showing\s+\d+\s+of\s+100\s+niches$/i.test(candidate.textContent.trim());
+    var loadButton = buttons.find(function (button) {
+      return /^Load More\\s*\\(/.test(button.textContent.trim());
     });
-    var dataScript = Array.from(document.querySelectorAll('script[type="application/ld+json"]')).find(function (candidate) {
-      return candidate.textContent.indexOf('"@type":"ItemList"') !== -1 &&
-        candidate.textContent.indexOf('De Impresa Globals eCommerce Design Inspiration') !== -1;
+    var counter = Array.from(section.querySelectorAll('p')).find(function (node) {
+      return /^Showing\\s+\\d+\\s+of\\s+\\d+\\s+niches$/i.test(node.textContent.trim());
     });
-    if (!grid || !search || !loadButton || !counter || filterButtons.length !== 9 || !dataScript) return;
 
-    var items;
-    try {
-      items = JSON.parse(dataScript.textContent).itemListElement;
-    } catch (error) {
-      console.error('Portfolio niche data could not be read.', error);
+    var dataScript = null;
+    var items = null;
+    Array.from(document.querySelectorAll('script[type="application/ld+json"]')).some(function (node) {
+      try {
+        var parsed = JSON.parse(node.textContent);
+        if (parsed && parsed['@type'] === 'ItemList' &&
+            parsed.name === 'De Impresa Globals eCommerce Design Inspiration' &&
+            Array.isArray(parsed.itemListElement)) {
+          dataScript = node;
+          items = parsed.itemListElement;
+          return true;
+        }
+      } catch (error) {}
+      return false;
+    });
+
+    if (!grid || !search || !loadButton || !counter || filterButtons.length !== filterNames.length ||
+        !Array.isArray(items) || items.length !== 100) {
+      console.error('Portfolio controls were not initialised: required elements or 100-item data list are missing.', {
+        grid: !!grid, search: !!search, loadButton: !!loadButton, counter: !!counter,
+        filters: filterButtons.length, items: items && items.length
+      });
       return;
     }
-    if (!Array.isArray(items) || items.length !== 100) return;
 
-    var initialCards = Array.from(grid.querySelectorAll(':scope > a'));
-    if (initialCards.length !== 24) return;
+    var initialCards = Array.from(grid.querySelectorAll(':scope > a[href]'));
+    if (initialCards.length < 1 || initialCards.length > items.length) {
+      console.error('Portfolio controls were not initialised: unexpected initial card count.', initialCards.length);
+      return;
+    }
 
-    var allCards = [];
     var activeFilter = 'All';
     var searchTerm = '';
-    var shown = 24;
+    var shown = Math.min(24, items.length);
     var batchSize = 16;
+    var allCards = new Array(items.length);
     var activeClass = 'px-5 py-2.5 rounded-full font-body text-sm font-semibold tracking-wide transition-all duration-300 border bg-gradient-to-r from-primary to-accent text-primary-foreground border-primary/60 shadow-[0_6px_20px_-6px_hsl(var(--primary)/0.7)] scale-[1.03]';
     var inactiveClass = 'px-5 py-2.5 rounded-full font-body text-sm font-semibold tracking-wide transition-all duration-300 border bg-foreground/95 text-background border-foreground/20 hover:border-primary hover:text-primary hover:-translate-y-0.5';
 
-    function getPlatform(item) {
-      var match = String(item.name || '').match(/—\s*(.+?)\s+Design Inspiration$/);
+    function platformFor(item) {
+      if (item.platform) return String(item.platform).trim();
+      var match = String(item.name || '').match(/—\\s*(.+?)\\s+Design Inspiration$/);
       return match ? match[1].trim() : '';
     }
 
-    function makeCard(item, index) {
-      var match = String(item.name || '').match(/^(.+?) eCommerce Store — (.+?) Design Inspiration$/);
-      var category = match ? match[1] : String(item.name || 'eCommerce');
-      var platform = match ? match[2] : getPlatform(item);
-      var domain = String(item.store || '').replace(/^https?:\/\//i, '').split('/')[0].trim();
-      if (!/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(domain)) return null;
+    function createCard(item, index) {
+      var nameMatch = String(item.name || '').match(/^(.+?) eCommerce Store — (.+?) Design Inspiration$/);
+      var category = nameMatch ? nameMatch[1] : String(item.name || 'eCommerce Store');
+      var platform = platformFor(item);
+      var domain = String(item.store || '').replace(/^https?:\\/\\//i, '').split('/')[0].trim();
+      if (!/^[a-z0-9-]+(?:\\.[a-z0-9-]+)+$/i.test(domain)) return null;
 
       var card = document.createElement('a');
       card.href = 'https://' + domain;
@@ -879,22 +896,21 @@
       card.title = 'Open the ' + category + ' store at ' + domain + ' in a new tab';
       card.setAttribute('aria-label', category + ' ' + platform + ' store shown as design inspiration — visit ' + domain + ' in a new tab');
       card.className = 'group block bg-card rounded-xl overflow-hidden border border-border hover:border-primary/60 hover:shadow-[0_18px_40px_-18px_hsl(var(--primary)/0.55)] transition-all hover:-translate-y-1 animate-fade-in';
-      card.style.animationDelay = Math.max(0, index - 23) * 25 + 'ms';
 
       var media = document.createElement('div');
-      media.className = 'relative flex aspect-[400/220] flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#111827] via-[#263449] to-[#0b0b0b] px-5 text-center transition-transform duration-500 group-hover:scale-[1.02]';
-      var mediaEyebrow = document.createElement('span');
-      mediaEyebrow.className = 'mb-3 text-[10px] font-bold uppercase tracking-[0.24em] text-amber-300';
-      mediaEyebrow.textContent = 'Store inspiration';
-      var mediaTitle = document.createElement('span');
-      mediaTitle.className = 'font-display text-xl font-bold leading-tight text-white';
-      mediaTitle.textContent = category;
-      var mediaDomain = document.createElement('span');
-      mediaDomain.className = 'mt-2 text-xs text-white/70';
-      mediaDomain.textContent = domain;
-      media.appendChild(mediaEyebrow);
-      media.appendChild(mediaTitle);
-      media.appendChild(mediaDomain);
+      media.className = 'relative flex aspect-[400/220] flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#111827] via-[#263449] to-[#0b0b0b] px-5 text-center';
+      var eyebrow = document.createElement('span');
+      eyebrow.className = 'mb-3 text-[10px] font-bold uppercase tracking-[0.24em] text-amber-300';
+      eyebrow.textContent = 'Store inspiration';
+      var headingVisual = document.createElement('span');
+      headingVisual.className = 'font-display text-xl font-bold leading-tight text-white';
+      headingVisual.textContent = category;
+      var domainVisual = document.createElement('span');
+      domainVisual.className = 'mt-2 text-xs text-white/70';
+      domainVisual.textContent = domain;
+      media.appendChild(eyebrow);
+      media.appendChild(headingVisual);
+      media.appendChild(domainVisual);
 
       var body = document.createElement('div');
       body.className = 'p-4';
@@ -904,22 +920,17 @@
       var description = document.createElement('p');
       description.className = 'font-body text-sm text-muted-foreground mb-2 line-clamp-2';
       description.textContent = 'Design inspiration: the style and quality we bring to your ' + category.toLowerCase() + ' store.';
-
       var meta = document.createElement('div');
       meta.className = 'flex items-center justify-between gap-2';
       var domainLabel = document.createElement('span');
-      domainLabel.className = 'inline-flex items-center gap-1.5 min-w-0 font-body text-xs text-muted-foreground transition-colors group-hover:text-primary';
-      var iconSource = initialCards[0].querySelector('.lucide-external-link');
-      if (iconSource) domainLabel.appendChild(iconSource.cloneNode(true));
+      domainLabel.className = 'inline-flex items-center gap-1.5 min-w-0 font-body text-xs text-muted-foreground';
       var domainText = document.createElement('span');
-      domainText.className = 'line-clamp-1 group-hover:underline';
+      domainText.className = 'line-clamp-1';
       domainText.textContent = domain;
       domainLabel.appendChild(domainText);
-
       var tag = document.createElement('span');
       tag.className = 'font-body text-[10px] font-semibold uppercase tracking-wide text-primary border border-primary/40 rounded-full px-2 py-0.5 whitespace-nowrap';
       tag.textContent = 'Inspiration';
-
       meta.appendChild(domainLabel);
       meta.appendChild(tag);
       body.appendChild(heading);
@@ -931,41 +942,39 @@
     }
 
     items.forEach(function (item, index) {
-      allCards[index] = index < initialCards.length ? initialCards[index] : makeCard(item, index);
+      allCards[index] = index < initialCards.length ? initialCards[index] : createCard(item, index);
     });
 
-    function matches(item, index) {
-      var platform = getPlatform(item);
-      var domain = String(item.store || '').replace(/^https?:\/\//i, '').split('/')[0];
-      var category = String(item.name || '').replace(/\s+eCommerce Store\s+—.*$/, '');
-      var haystack = [category, platform, domain, item.name, item.description].join(' ').toLowerCase();
-      var filterMatch = activeFilter === 'All' || platform.toLowerCase() === activeFilter.toLowerCase();
-      return filterMatch && (!searchTerm || haystack.indexOf(searchTerm) !== -1) && !!allCards[index];
-    }
-
     function render() {
-      var matchingIndexes = [];
+      var matches = [];
       items.forEach(function (item, index) {
-        if (matches(item, index)) matchingIndexes.push(index);
+        var platform = platformFor(item).toLowerCase();
+        var domain = String(item.store || '').replace(/^https?:\\/\\//i, '').split('/')[0].toLowerCase();
+        var name = String(item.name || '').toLowerCase();
+        var description = String(item.description || '').toLowerCase();
+        var filterMatch = activeFilter === 'All' || platform === activeFilter.toLowerCase();
+        var searchMatch = !searchTerm || [name, platform, domain, description].join(' ').indexOf(searchTerm) !== -1;
+        if (filterMatch && searchMatch && allCards[index]) matches.push(index);
       });
 
-      shown = Math.min(shown, matchingIndexes.length);
-      var visibleIndexes = matchingIndexes.slice(0, shown);
+      shown = Math.min(shown, matches.length);
       var fragment = document.createDocumentFragment();
-      visibleIndexes.forEach(function (index) {
+      matches.slice(0, shown).forEach(function (index) {
         fragment.appendChild(allCards[index]);
       });
       grid.replaceChildren(fragment);
-
-      counter.textContent = matchingIndexes.length
-        ? 'Showing ' + visibleIndexes.length + ' of ' + matchingIndexes.length + ' niches'
+      counter.textContent = matches.length
+        ? 'Showing ' + Math.min(shown, matches.length) + ' of ' + matches.length + ' niches'
         : 'No niches match your search';
-      var remaining = Math.max(0, matchingIndexes.length - visibleIndexes.length);
+      var remaining = Math.max(0, matches.length - shown);
       loadButton.textContent = remaining ? 'Load More (' + remaining + ' remaining)' : 'All niches shown';
       loadButton.hidden = remaining === 0;
+      loadButton.disabled = remaining === 0;
     }
 
     filterButtons.forEach(function (button) {
+      button.type = 'button';
+      button.setAttribute('aria-pressed', button.textContent.trim() === activeFilter ? 'true' : 'false');
       button.addEventListener('click', function () {
         activeFilter = button.textContent.trim();
         filterButtons.forEach(function (candidate) {
@@ -976,7 +985,6 @@
         shown = 24;
         render();
       });
-      button.setAttribute('aria-pressed', button.textContent.trim() === 'All' ? 'true' : 'false');
     });
 
     search.addEventListener('input', function () {
@@ -985,8 +993,9 @@
       render();
     });
 
+    loadButton.type = 'button';
     loadButton.addEventListener('click', function () {
-      shown += batchSize;
+      shown = Math.min(shown + batchSize, items.length);
       render();
     });
 
@@ -999,8 +1008,7 @@
   } else {
     initPortfolioControls();
   }
-})();
-</script>
+})();</script>
 
 <script id="de-impresa-services-load-more">
 (function () {
@@ -2021,5 +2029,21 @@
     cursor: pointer !important;
   }
 }
+</style>
+
+<style id="de-impresa-interactive-controls-fixes">
+#portfolio button { pointer-events:auto; }
+#portfolio button[aria-pressed] { cursor:pointer; }
+#portfolio button:disabled { cursor:not-allowed; }
+#video-testimonials [aria-label="Previous slide"],
+#video-testimonials [aria-label="Next slide"] {
+  z-index: 40 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+#video-testimonials [aria-label="Previous slide"] { left: 0 !important; }
+#video-testimonials [aria-label="Next slide"] { right: 0 !important; }
+#video-testimonials [aria-label="Previous slide"]:disabled,
+#video-testimonials [aria-label="Next slide"]:disabled { opacity: .45; }
 </style>
 </body></html>
