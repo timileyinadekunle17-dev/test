@@ -255,6 +255,14 @@
       var image = overlay.querySelector('#de-impresa-profile-image');
       image.src = data.image.getAttribute('src');
       image.alt = data.name + ' — De Impresa Globals team profile';
+      // Match the exact rendered dimensions of the clicked card portrait.
+      var cardImageSize = data.image.getBoundingClientRect();
+      var portraitWidth = Math.round(cardImageSize.width);
+      var portraitHeight = Math.round(cardImageSize.height);
+      image.style.width = portraitWidth + 'px';
+      image.style.height = portraitHeight + 'px';
+      image.style.maxWidth = 'min(100%, ' + portraitWidth + 'px)';
+      image.style.maxHeight = portraitHeight + 'px';
       overlay.querySelector('#de-impresa-profile-name').textContent = data.name;
       overlay.querySelector('#de-impresa-profile-role').textContent = data.role;
       var description = overlay.querySelector('#de-impresa-profile-description');
