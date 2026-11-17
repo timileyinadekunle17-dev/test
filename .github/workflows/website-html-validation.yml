@@ -1,0 +1,53 @@
+name: Main Website HTML and Script Validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - .github/workflows/website-html-validation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate inline JavaScript and team profile markup
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const scripts = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)];
+          let checked = 0;
+          for (const match of scripts) {
+            const attrs = match[1];
+            if (/type=["']application\\/ld\\+json["']/i.test(attrs)) continue;
+            const code = match[2].trim();
+            if (!code) continue;
+            new vm.Script(code, { filename: 'inline-script-' + (++checked) + '.js' });
+          }
+          const ids = [...html.matchAll(/\\bid=["']([^"']+)["']/gi)].map(m => m[1]);
+          const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
+          if (duplicates.length) throw new Error('Duplicate HTML ids: ' + [...new Set(duplicates)].join(', '));
+          const teamStart = html.indexOf('<section id="team"');
+          const certStart = html.indexOf('<section id="certifications"', teamStart);
+          if (teamStart < 0 || certStart < 0) throw new Error('Team or certification section missing');
+          const team = html.slice(teamStart, certStart);
+          const profileCards = [...team.matchAll(/<button\\b[^>]*>[\\s\\S]*?<img[^>]*class=["'][^"']*team-profile-image[^"']*["'][\\s\\S]*?<\\/button>/gi)];
+          if (profileCards.length < 4) throw new Error('Expected team profile cards were not found');
+          if (!html.includes('de-impresa-team-expert-profile-modal-script') || !html.includes('de-impresa-profile-whatsapp')) {
+            throw new Error('Team profile modal implementation is incomplete');
+          }
+          if (/DETRUTH AGENCY|Detruth Agency/i.test(html.slice(html.indexOf('de-impresa-team-expert-profile-modal-script'), html.indexOf('</script>', html.indexOf('de-impresa-team-expert-profile-modal-script'))))) {
+            throw new Error('Outdated agency branding remains in team profile modal');
+          }
+          console.log('Validated ' + checked + ' inline scripts and ' + profileCards.length + ' team profile cards.');
+          NODE
