@@ -165,7 +165,7 @@
     var previousFocus = null;
     var closeButtons = Array.from(overlay.querySelectorAll('[data-profile-close]'));
     function cleanText(value) {
-      return (value || '').replace(/\\s+/g, ' ').trim();
+      return (value || '').replace(/\s+/g, ' ').trim();
     }
     function directTextChildren(card) {
       return Array.from(card.children).map(function (node) {
@@ -176,13 +176,13 @@
       var image = card.querySelector('img.team-profile-image');
       var children = directTextChildren(card);
       var name = children.find(function (value) {
-        return /^(Mr\\.|Mrs\\.|Miss|Ms\\.)\\s/.test(value);
+        return /^(Mr\.|Mrs\.|Miss|Ms\.)\s/.test(value);
       }) || (image && cleanText(image.alt).split(',')[0]) || 'Team specialist';
       var nameIndex = children.indexOf(name);
       var alias = nameIndex >= 0 ? children[nameIndex + 1] || '' : '';
       var roles = nameIndex >= 0 ? children.slice(nameIndex + (alias ? 2 : 1)) : [];
       roles = roles.flatMap(function (value) {
-        return value.split(/(?=\\s{2,})/).map(cleanText);
+        return value.split(/(?=\s{2,})/).map(cleanText);
       }).filter(function (value) {
         return value && value !== alias && value !== name && value.length < 100;
       });
@@ -235,7 +235,7 @@
     function certificationsFor(name) {
       return certificationCards.filter(function (card) {
         var text = cleanText(card.textContent).toLowerCase();
-        var key = name.replace(/^(Mr\\.|Mrs\\.|Miss|Ms\\.)\\s*/i, '').toLowerCase();
+        var key = name.replace(/^(Mr\.|Mrs\.|Miss|Ms\.)\s*/i, '').toLowerCase();
         return key.length > 4 && text.includes(key);
       });
     }
