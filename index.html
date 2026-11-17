@@ -893,9 +893,7 @@
     }
 
     var cards = Array.from(grid.querySelectorAll(':scope > a'));
-    var countLabel = Array.from(section.querySelectorAll('p')).find(function (p) {
-      return /Showing\\s+\\d+\\s+of\\s+\\d+/i.test(p.textContent);
-    });
+    var countLabel = section.querySelector('p.text-center.mt-6');
     var loadMore = Array.from(section.querySelectorAll('button')).find(function (button) {
       return /^Load More/i.test(button.textContent.trim());
     });
@@ -919,7 +917,7 @@
     function platformFor(card) {
       if (card.dataset.platform) return card.dataset.platform.toLowerCase();
       var label = card.getAttribute('aria-label') || '';
-      var match = label.match(/\\b(Shopify|WooCommerce|Wix|Squarespace|Email Marketing|SEO|Social Commerce|Dropshipping)\\s+store\\b/i);
+      var match = label.match(/\b(Shopify|WooCommerce|Wix|Squarespace|Email Marketing|SEO|Social Commerce|Dropshipping)\s+store\b/i);
       return match ? match[1].toLowerCase() : '';
     }
     function render() {
