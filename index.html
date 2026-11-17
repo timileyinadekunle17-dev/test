@@ -831,10 +831,10 @@
       return filterNames.indexOf(button.textContent.trim()) !== -1;
     });
     var loadButton = buttons.find(function (button) {
-      return /^Load More\\s*\\(/.test(button.textContent.trim());
+      return /^Load More\s*\(/.test(button.textContent.trim());
     });
     var counter = Array.from(section.querySelectorAll('p')).find(function (node) {
-      return /^Showing\\s+\\d+\\s+of\\s+\\d+\\s+niches$/i.test(node.textContent.trim());
+      return /^Showing\s+\d+\s+of\s+\d+\s+niches$/i.test(node.textContent.trim());
     });
 
     var dataScript = null;
@@ -878,7 +878,7 @@
 
     function platformFor(item) {
       if (item.platform) return String(item.platform).trim();
-      var match = String(item.name || '').match(/—\\s*(.+?)\\s+Design Inspiration$/);
+      var match = String(item.name || '').match(/—\s*(.+?)\s+Design Inspiration$/);
       return match ? match[1].trim() : '';
     }
 
@@ -886,8 +886,8 @@
       var nameMatch = String(item.name || '').match(/^(.+?) eCommerce Store — (.+?) Design Inspiration$/);
       var category = nameMatch ? nameMatch[1] : String(item.name || 'eCommerce Store');
       var platform = platformFor(item);
-      var domain = String(item.store || '').replace(/^https?:\\/\\//i, '').split('/')[0].trim();
-      if (!/^[a-z0-9-]+(?:\\.[a-z0-9-]+)+$/i.test(domain)) return null;
+      var domain = String(item.store || '').replace(/^https?:\/\//i, '').split('/')[0].trim();
+      if (!/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(domain)) return null;
 
       var card = document.createElement('a');
       card.href = 'https://' + domain;
@@ -949,7 +949,7 @@
       var matches = [];
       items.forEach(function (item, index) {
         var platform = platformFor(item).toLowerCase();
-        var domain = String(item.store || '').replace(/^https?:\\/\\//i, '').split('/')[0].toLowerCase();
+        var domain = String(item.store || '').replace(/^https?:\/\//i, '').split('/')[0].toLowerCase();
         var name = String(item.name || '').toLowerCase();
         var description = String(item.description || '').toLowerCase();
         var filterMatch = activeFilter === 'All' || platform === activeFilter.toLowerCase();
