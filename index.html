@@ -567,8 +567,10 @@
         document.body.appendChild(viewer);
         viewer.addEventListener('click', function (event) {
           if (event.target.closest('[data-certificate-close]')) {
+            event.preventDefault();
+            event.stopPropagation();
             viewer.style.display = 'none';
-            document.body.style.overflow = 'hidden';
+            document.body.style.overflow = overlay.hidden ? '' : 'hidden';
           }
         });
       }
@@ -654,7 +656,13 @@
         zoomHint.className = 'absolute bottom-3 right-3 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-primary shadow';
         zoomHint.textContent = 'Click image to view full width';
         imageButton.appendChild(zoomHint);
-        imageButton.addEventListener('click', function () {
+        certImage.setAttribute('role', 'button');
+        certImage.setAttribute('tabindex', '0');
+        certImage.setAttribute('aria-label', 'Open ' + certTitleText + ' certificate in full width');
+        certImage.style.cursor = 'zoom-in';
+        certImage.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
           openCertificateViewer({
             image: source.getAttribute('src'),
             alt: source.alt,
@@ -662,6 +670,20 @@
             title: certTitleText,
             description: detailParagraphs
           });
+        });
+        certImage.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            event.stopPropagation();
+            certImage.click();
+          }
+        });
+        imageButton.addEventListener('click', function (event) {
+          if (event.target === imageButton || event.target === zoomHint) {
+            event.preventDefault();
+            event.stopPropagation();
+            certImage.click();
+          }
         });
         tile.appendChild(imageButton);
         var copy = document.createElement('div');
@@ -695,6 +717,8 @@
     }
     function closeProfile() {
       if (overlay.hidden) return;
+      var certificateViewer = document.getElementById('de-impresa-certificate-viewer');
+      if (certificateViewer) certificateViewer.style.display = 'none';
       overlay.hidden = true;
       overlay.style.display = 'none';
       document.body.style.overflow = '';
@@ -713,7 +737,7 @@
         var certificateViewer = document.getElementById('de-impresa-certificate-viewer');
         if (certificateViewer && certificateViewer.style.display === 'flex') {
           certificateViewer.style.display = 'none';
-          document.body.style.overflow = 'hidden';
+          document.body.style.overflow = overlay.hidden ? '' : 'hidden';
           return;
         }
         closeProfile();
