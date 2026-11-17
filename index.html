@@ -1550,7 +1550,7 @@
       var media = document.createElement('div');
       media.className = 'relative aspect-[400/220] overflow-hidden bg-gradient-to-br from-[#111827] via-[#263449] to-[#0b0b0b]';
       var preview = document.createElement('img');
-      preview.src = 'https://detruthagency.com/stores/' + domain + '.webp';
+      preview.src = '/stores/' + domain + '.webp';
       preview.alt = category + ' eCommerce website preview — ' + platform + ' design inspiration (' + domain + ')';
       preview.title = category + ' — ' + domain;
       preview.loading = 'lazy';
@@ -1707,12 +1707,24 @@
       var media = document.createElement('div');
       media.className = 'aspect-[3/2] w-full overflow-hidden bg-background';
       var img = document.createElement('img');
-      img.src = isPortfolio ? service[2] : 'https://detruthagency.com/assets/' + service[2];
+      img.src = isPortfolio ? service[2] : './assets/' + service[2];
       img.alt = service[0];
       img.loading = 'lazy';
       img.decoding = 'async';
       img.sizes = '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw';
       img.className = 'h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105';
+      img.addEventListener('error', function () {
+        if (img.dataset.fallbackShown === 'true') return;
+        img.dataset.fallbackShown = 'true';
+        img.remove();
+        var fallback = document.createElement('div');
+        fallback.className = 'flex min-h-[180px] h-full w-full items-center justify-center bg-gradient-to-br from-[#f8f6f1] to-[#e9e3d6] px-5 text-center';
+        var fallbackLabel = document.createElement('span');
+        fallbackLabel.className = 'font-display text-lg font-semibold text-foreground';
+        fallbackLabel.textContent = service[0];
+        fallback.appendChild(fallbackLabel);
+        media.appendChild(fallback);
+      });
       media.appendChild(img);
       var body = document.createElement('div');
       body.className = 'p-6';
