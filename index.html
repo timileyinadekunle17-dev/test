@@ -201,68 +201,151 @@
       return { image: image, name: name, alias: alias, roles: roles, role: role };
     }
     function expertiseFor(roles, memberName) {
-      var featured = {
+      var profiles = {
         'Mr. Oluwatoyin Ayomide Barnabas': [
-          'Agency leadership and strategic direction','Ecommerce business growth planning','Client discovery and project scoping','Commercial strategy and service positioning','Team leadership and specialist coordination','Client relationship and partnership management','Project governance and delivery oversight','Quality assurance across service lines','Ecommerce platform and technology direction','Conversion and customer journey strategy','Digital marketing and acquisition planning','Business operations and workflow improvement','Growth roadmaps and performance reviews','Client communication and stakeholder alignment'
+          'Agency leadership and long term direction','Ecommerce business growth planning','Client discovery and consultation','Project scoping and delivery standards','Commercial strategy and service positioning','Team leadership and specialist coordination','Client relationship management','Partnership development and account care','Quality assurance across service lines','Ecommerce platform strategy','Conversion and customer journey planning','Digital marketing direction','Business operations improvement','Growth roadmaps and performance reviews','Stakeholder communication','Service development and offer planning','Project governance and risk review','Team performance and mentoring','Client expectation management'
         ],
         'Mr. Onaopemipo Oluwatoyin': [
-          'Marketing funnel strategy and structure','Customer journey mapping','Landing page and campaign alignment','Lead capture and nurture planning','Conversion path reviews','Website maintenance planning','Website content and functionality checks','Routine site updates and support coordination','Website issue identification and triage','Responsive website quality checks','Campaign-to-store experience reviews','Client requirements and task coordination','Launch readiness and post-launch checks','Ongoing improvement recommendations'
+          'Marketing funnel planning','Customer journey mapping','Landing page structure and messaging','Lead capture experience reviews','Campaign to website alignment','Website maintenance coordination','Routine website functionality checks','Content and page update management','Issue identification and troubleshooting','Responsive website quality checks','Launch readiness reviews','Post launch website support','Conversion path observations','Client update and task coordination','Website improvement recommendations','Basic performance monitoring','Website change documentation','Cross team delivery coordination','Quality checks before publishing','Support request prioritisation'
         ],
         'Mr. Olugbenga Daniel': [
-          'Dropshipping business planning','Product and niche opportunity research','Store merchandising and product presentation','Supplier and fulfilment workflow review','Dropshipping storefront optimisation','Marketing funnel planning','Customer journey and conversion path reviews','Campaign and landing page alignment','Offer presentation and product positioning','Store launch readiness checks','Customer acquisition workflow planning','Performance review and improvement priorities','Client project coordination','Quality checks across store and funnel touchpoints'
+          'Dropshipping business planning','Product niche opportunity research','Store merchandising strategy','Product page presentation','Supplier workflow assessment','Fulfilment journey planning','Dropshipping storefront optimisation','Marketing funnel structure','Customer journey evaluation','Offer positioning and product messaging','Campaign landing page alignment','Store launch preparation','Customer acquisition planning','Catalogue organisation','Product offer evaluation','Performance review coordination','Client project communication','Store quality assurance','Retention opportunity identification','Market trend observation'
         ],
         'Mr. Opatoyinbo Joshua': [
-          'Business growth strategy development','Commercial opportunity assessment','Market and competitor research','Product discovery and evaluation','Product-market fit considerations','Demand and audience research','Product positioning recommendations','Growth opportunity prioritisation','Business development support','Go-to-market planning','Offer and merchandising evaluation','Research-led decision support','Client growth planning','Project scope and outcome alignment'
+          'Business growth strategy development','Commercial opportunity assessment','Market and competitor research','Product discovery and evaluation','Product demand assessment','Audience and customer research','Product positioning recommendations','Growth opportunity prioritisation','Business development planning','Go to market preparation','Offer and merchandising evaluation','Research led decision support','Client growth planning','Project scope alignment','Commercial model review','Product catalogue opportunity mapping','Market entry considerations','Business performance review','Strategic partnership research','Customer problem discovery','Growth initiative tracking'
+        ],
+        'Mr. Ezekiel Tomiwa': [
+          'Shopify store setup and configuration','Shopify theme customisation','Storefront layout optimisation','Product page structure','Collection organisation','Dropshipping store preparation','Product catalogue presentation','Mobile storefront checks','App integration coordination'
+        ],
+        'Mr. Oladimeji Hammed': [
+          'Social media channel planning','Social content calendar development','Community engagement coordination','Campaign publishing support','Audience interaction review','Klaviyo account configuration','Email campaign preparation','Customer lifecycle flow planning','Audience segmentation','List hygiene and consent checks','Welcome sequence planning'
+        ],
+        'Mr. Oluwatayo Feranmi Wonder': [
+          'Google Merchant Center setup','Product feed configuration','Product data quality review','Shopping feed diagnostics','Merchant policy issue checks','CRM platform configuration','Customer record organisation','Lifecycle stage planning','Lead and customer segmentation','CRM workflow coordination','Customer data maintenance','Reporting field organisation'
+        ],
+        'Mr. Adeoye Juwon': [
+          'Google Analytics configuration','Measurement planning','Event tracking review','Conversion tracking setup','Traffic source analysis','Engagement reporting','Dashboard organisation','Business development research','Lead opportunity identification','Partnership outreach planning','Client discovery support','Commercial follow up coordination'
+        ],
+        'Mr. Alfred Iremide': [
+          'User interface design','User experience planning','Wireframe development','Responsive interface layouts','Visual hierarchy design','Design system consistency','Prototype preparation','Project scheduling','Task and milestone coordination','Delivery progress monitoring','Team communication','Design handoff documentation','Quality review coordination'
+        ],
+        'Mr. Opatoyinbo Taiwo Emmanuel': [
+          'Sales strategy planning','Sales process review','Offer positioning','Value proposition development','Lead qualification','Customer objection research','Sales conversation planning','Product discovery','Product comparison research','Market demand assessment','Product positioning insights','Catalogue opportunity review','Go to market research','Commercial opportunity tracking'
+        ],
+        'Miss Fayemi Omowunmi Grace': [
+          'Shopify storefront optimisation','Shopify theme configuration','Product page design','Collection page organisation','Responsive ecommerce design','Website visual hierarchy','User journey review','Navigation and usability checks','Brand consistency across pages','Storefront content presentation','Mobile shopping experience','Design quality assurance','Page layout refinement','Ecommerce launch preparation','Customer experience review'
+        ],
+        'Mr. Oluwatoyin Emmanuel': [
+          'CRM platform management','Customer data organisation','Contact lifecycle configuration','Pipeline and stage setup','Customer segmentation','CRM workflow planning','Customer relationship processes','Conversion rate optimisation','Landing page review','Checkout journey assessment','Friction point identification','Conversion measurement alignment','Experiment planning','Performance insight reporting','Client journey improvement','CRM data quality checks'
+        ],
+        'Mr. Abiodun Ayomide': [
+          'Shopify website development','Theme implementation','Storefront feature development','Responsive front end development','Product and collection templates','Shopify app integration','Website performance checks','Technical SEO foundations','Metadata implementation','Search friendly page structure','Indexing readiness checks','Technical issue identification','Structured data review','Website quality assurance','Development handoff','Cross browser testing'
+        ],
+        'Mr. Oluwatoyin Samuel': [
+          'AI workflow discovery','Automation opportunity assessment','AI assisted process design','Workflow mapping','Automation configuration','Prompt and instruction design','Process testing','Project planning','Task scheduling','Milestone tracking','Team coordination','Delivery documentation','Workflow quality checks','Operational efficiency review','Client requirement clarification','Implementation handoff','Ongoing workflow refinement'
         ]
       };
-      if (featured[memberName]) return featured[memberName];
-      var mapping = [
-        [/shopify|store optimization|website developer/i, ['Shopify storefront setup and optimisation','Theme and layout refinement','Product page and collection structure','Shopify app and feature coordination','Mobile storefront quality checks']],
-        [/dropshipping/i, ['Dropshipping store operations','Product and supplier workflow reviews','Product presentation and merchandising','Order and fulfilment journey planning','Niche and catalogue research']],
-        [/social media/i, ['Social media channel planning','Content calendar and publishing coordination','Audience engagement planning','Campaign and community monitoring','Social channel performance reviews']],
-        [/klaviyo|email marketing/i, ['Klaviyo account and flow configuration','Email campaign planning','Customer lifecycle automation','Audience segmentation and list hygiene','Retention communication']],
-        [/google merchant/i, ['Google Merchant Center setup','Product feed structure and quality checks','Shopping channel readiness','Product data optimisation','Merchant diagnostics and issue review']],
-        [/crm/i, ['CRM setup and administration','Customer data organisation','Lifecycle stage and pipeline configuration','Audience segmentation','Retention workflow planning']],
-        [/google analytics|analytics/i, ['Analytics and measurement planning','Event and conversion tracking','Traffic and engagement analysis','Reporting and dashboard interpretation','Measurement quality checks']],
-        [/business development|business growth/i, ['Business opportunity research','Commercial growth planning','Partnership and outreach support','Lead qualification processes','Growth initiative prioritisation']],
-        [/ui\/ux|designer|design/i, ['User interface design','User experience and journey planning','Responsive layout design','Visual hierarchy and accessibility checks','Design consistency and handoff']],
-        [/project manager/i, ['Project planning and scheduling','Task and milestone coordination','Cross-functional communication','Scope and delivery monitoring','Quality and risk tracking']],
-        [/sales strategist/i, ['Sales process planning','Offer and value proposition development','Lead qualification and follow-up planning','Sales journey review','Commercial opportunity prioritisation']],
-        [/product research/i, ['Product discovery and evaluation','Market and competitor research','Demand and audience analysis','Product positioning recommendations','Catalogue and merchandising insights']],
-        [/ecommerce website designer/i, ['Ecommerce website design','Responsive page composition','Visual identity and layout consistency','Usability and navigation reviews','Storefront design handoff']],
-        [/cro|conversion/i, ['Conversion journey analysis','Landing page and product page reviews','Friction and drop-off identification','Experiment and improvement planning','Conversion measurement alignment']],
-        [/seo/i, ['Ecommerce SEO planning','On-page optimisation','Technical SEO checks','Content and search intent alignment','Search visibility monitoring']],
-        [/ai automation/i, ['AI workflow discovery','Process automation planning','AI-assisted operational workflows','Automation testing and quality checks','Workflow documentation']],
-        [/maintenance/i, ['Website maintenance planning','Routine functionality checks','Issue identification and triage','Content and platform updates','Post-update quality assurance']]
-      ];
-      var areas = [];
-      (roles || []).forEach(function (role) {
-        mapping.forEach(function (entry) {
-          if (entry[0].test(role)) areas = areas.concat(entry[1]);
-        });
-      });
-      areas = Array.from(new Set(areas.concat([
-        'Client requirements and project coordination','Practical implementation planning','Cross-team collaboration and handoff','Quality checks before delivery','Clear progress communication','Ongoing improvement recommendations'
-      ])));
-      return areas.slice(0, Math.max(9, Math.min(12, areas.length)));
+      return profiles[memberName] || [];
     }
     function descriptionFor(data) {
-      var specialisms = data.roles.length ? data.roles.join(' and ') : 'specialist project work';
-      var focus = expertiseFor(data.roles, data.name).slice(0, 4).join(', ');
-      return [
-        data.name + (data.alias ? ' (' + data.alias + ')' : '') + ' is part of the De Impresa Globals team, contributing as ' + specialisms + '.',
-        'Their work focuses on ' + focus + '. They collaborate with the wider team to plan and deliver practical ecommerce and digital-growth work that fits each client’s project scope.',
-        'The team member’s responsibilities are aligned with the services listed on this profile. Project scope, priorities and deliverables are agreed with each client before work begins.'
+      var profiles = {
+        'Mr. Oluwatoyin Ayomide Barnabas': [
+          'I am the Founder and Admin of De Impresa Globals. I guide the direction of the agency and stay involved in client projects from the first discussion through planning, delivery and review. I want every client to understand the work being proposed, the priorities involved and the decisions being made.',
+          'I coordinate our ecommerce development, marketing, search, conversion and automation services, then bring the right specialists together around each project. My responsibilities include agency leadership, client growth strategy, service direction, team coordination and quality assurance.',
+          'When you work with De Impresa Globals, I remain available to review progress, address important decisions and make sure the agreed work is handled with care. I value clear communication, realistic expectations and long term working relationships.'
+        ],
+        'Mr. Onaopemipo Oluwatoyin': [
+          'I work across marketing funnel planning and website maintenance at De Impresa Globals. I help organise the steps that guide a visitor from discovering an offer to taking the next action, while also supporting the ongoing care of the website.',
+          'My work includes reviewing landing page journeys, checking how campaign messages connect with the website and coordinating routine updates. I pay attention to the details that can interrupt a visitor experience, from page content and navigation to everyday website functionality.',
+          'When I support a project, I focus on keeping the website organised, communicating issues clearly and helping the team follow an agreed improvement plan. I want clients to know what has been reviewed and what needs attention next.'
+        ],
+        'Mr. Olugbenga Daniel': [
+          'I specialise in dropshipping business support and marketing funnel planning at De Impresa Globals. I help shape the store experience around the products being offered and the customers the business wants to reach.',
+          'My work brings together product presentation, storefront organisation, supplier and fulfilment considerations and the journey from a campaign to a product page. I also review how offers are communicated so that the store and its marketing work towards the same objective.',
+          'I approach each assignment by understanding the business model first, then helping the team organise practical store and funnel improvements. My aim is to make the customer journey easier to follow and the project priorities clear.'
+        ],
+        'Mr. Opatoyinbo Joshua': [
+          'I work as a Business Growth Strategist and Product Research Specialist at De Impresa Globals. I help businesses examine growth opportunities and make more informed decisions about the products and markets they want to pursue.',
+          'My work includes researching product opportunities, reviewing market and competitor information, considering customer demand and assessing how an offer can be positioned. I connect research findings with practical business priorities so that recommendations have a clear purpose.',
+          'When I work with a client, I focus on understanding the opportunity before suggesting a direction. I value careful research, realistic planning and clear communication about what the available information can support.'
+        ],
+        'Mr. Ezekiel Tomiwa': [
+          'I specialise in Shopify store optimisation and dropshipping store support at De Impresa Globals. I help prepare storefronts so that products, collections and important store information are presented in a clear and consistent way.',
+          'My work includes Shopify setup, theme adjustments, product page organisation, collection structure and practical checks across desktop and mobile screens. I also consider how store apps and dropshipping workflows fit into the wider shopping experience.',
+          'I approach each store by reviewing its current structure and understanding what the owner needs to improve. I then work through the agreed tasks carefully and keep the team informed about progress and outstanding details.'
+        ],
+        'Mr. Oladimeji Hammed': [
+          'I work in social media marketing and Klaviyo email marketing at De Impresa Globals. I help businesses communicate with their audiences through consistent social content and useful email messages.',
+          'My responsibilities include supporting content planning, campaign coordination, audience engagement and email marketing workflows. I also help organise customer segments and lifecycle messages so that communication is relevant to the stage a customer is at.',
+          'I focus on keeping campaigns organised and aligned with the business message. I work with the wider team to make sure the content and email activity follow the agreed goals and are reviewed before delivery.'
+        ],
+        'Mr. Oluwatayo Feranmi Wonder': [
+          'I specialise in Google Merchant Center and CRM management at De Impresa Globals. I help organise the product information businesses share with shopping platforms and the customer information they manage across their sales processes.',
+          'My work includes reviewing product feeds, checking product data, helping identify Merchant Center issues and organising CRM records, stages and customer segments. I pay attention to the accuracy and structure of information because these details affect how teams manage their marketing and customer relationships.',
+          'When I support a project, I work through the available account information, identify items that need attention and coordinate practical next steps with the team. I aim to make the underlying systems clearer and easier to maintain.'
+        ],
+        'Mr. Adeoye Juwon': [
+          'I work across Google Analytics and business development at De Impresa Globals. I help the team understand website activity while also supporting the identification and development of relevant business opportunities.',
+          'My analytics work involves measurement setup, event and conversion tracking reviews, traffic analysis and reporting. On the business development side, I support opportunity research, lead discovery and the early conversations that help clarify a potential project.',
+          'I value accurate information and thoughtful communication. I aim to make reporting useful for decisions and ensure that business opportunities are approached with a clear understanding of the client’s needs.'
+        ],
+        'Mr. Alfred Iremide': [
+          'I work as a UI and UX Designer and Project Manager at De Impresa Globals. I help shape digital experiences that are clear to use and coordinate the work required to move design and project tasks forward.',
+          'My design responsibilities include interface layouts, wireframes, responsive experiences, visual hierarchy and design consistency. I also support project planning, task coordination, milestone reviews and communication between the people involved in delivery.',
+          'I pay attention to both the experience being created and the process used to deliver it. My focus is to keep design decisions purposeful, project tasks organised and handoffs clear.'
+        ],
+        'Mr. Opatoyinbo Taiwo Emmanuel': [
+          'I work in sales strategy and product research at De Impresa Globals. I help examine how products are positioned and how a business can communicate its offer throughout the sales process.',
+          'My work includes researching product options and market demand, reviewing customer needs, shaping value propositions and considering the questions that may arise during a sales conversation. I use these findings to support practical recommendations for product selection and commercial planning.',
+          'I approach each assignment by looking at the available evidence and the customer perspective. I want the sales direction and product decisions to be clear, relevant and aligned with the business objectives.'
+        ],
+        'Miss Fayemi Omowunmi Grace': [
+          'I specialise in Shopify store optimisation and ecommerce website design at De Impresa Globals. I help create and refine storefront experiences that present a brand and its products clearly across different screen sizes.',
+          'My work includes reviewing page layouts, improving product and collection presentation, refining navigation and checking the consistency of the visual experience. I consider how customers move through a store and whether the design makes important information easy to find.',
+          'I take care with the details that shape a customer’s first impression and shopping experience. I work with the team to keep design decisions aligned with the store’s identity and the project requirements.'
+        ],
+        'Mr. Oluwatoyin Emmanuel': [
+          'I work across CRM management and conversion rate optimisation at De Impresa Globals. I help businesses organise customer information and review the parts of a website journey that influence whether visitors take action.',
+          'My work includes structuring CRM records and workflows, organising customer stages and segments, reviewing landing pages and examining possible friction in the shopping or enquiry journey. I look at how customer information and website experience can support one another.',
+          'I focus on practical improvements that can be explained, reviewed and measured. I work with the team to keep customer processes organised and make conversion recommendations that fit the project scope.'
+        ],
+        'Mr. Abiodun Ayomide': [
+          'I specialise in Shopify website development and SEO at De Impresa Globals. I help build and refine ecommerce websites while paying attention to the technical foundations that support search visibility.',
+          'My development work includes implementing storefront features, adjusting themes, organising templates and checking responsive behaviour. My SEO work includes reviewing page structure, metadata, indexing readiness and technical issues that may affect how search engines understand a website.',
+          'I approach each task with care for both the visitor experience and the underlying implementation. I work with the team to keep development changes organised and ensure agreed technical improvements are checked before handoff.'
+        ],
+        'Mr. Oluwatoyin Samuel': [
+          'I work in AI automation and project management at De Impresa Globals. I help identify repetitive processes that may benefit from automation and coordinate the tasks needed to plan and test those workflows.',
+          'My work includes mapping existing processes, exploring suitable AI assisted steps, configuring and testing workflows, documenting how they operate and supporting project schedules. I pay attention to reliability and clarity so that an automated process can be understood by the people using it.',
+          'I work with the team to keep implementation tasks organised and to review workflows before they are handed over. My focus is on practical automation that fits the client’s process and agreed requirements.'
+        ]
+      };
+      return profiles[data.name] || [
+        'I am part of the De Impresa Globals team, where I contribute to the responsibilities listed on my profile. I work with the team to understand each project and the needs behind the requested work.',
+        'My role involves applying my specialist knowledge to agreed tasks, sharing useful observations and coordinating with colleagues when a project needs input from more than one area.',
+        'I aim to approach each assignment with care, communicate clearly and help deliver work that follows the agreed scope and priorities.'
       ];
     }
     function certificationsFor(name) {
+      var exactOwners = {
+        'Google_Ads_Measurement_Certificate_Onaopemipo.jpg': 'Mr. Onaopemipo Oluwatoyin',
+        'certificate_Olugbenga_Daniel.jpg': 'Mr. Olugbenga Daniel',
+        'AI-Powered_Performance_Ads_Certificate_Fayemi_Omowunmi_Grace.jpg': 'Miss Fayemi Omowunmi Grace',
+        'Oluwatoyin_Ayomide_Barnabas_Certificate.png': 'Mr. Oluwatoyin Ayomide Barnabas',
+        'certificate_business_growth_strategist.png': 'Mr. Opatoyinbo Joshua',
+        'Shopify_Store_Optimization_Certificate.png': 'Mr. Ezekiel Tomiwa',
+        'Klaviyo_Email_Marketing_Certification_Certificate.png': 'Mr. Oladimeji Hammed',
+        'CRM_Specialist_Certification_Certificate.png': 'Mr. Oluwatayo Feranmi Wonder',
+        'Google_Ads_Certification_Certificate_for_Adeoye_Juwon.png': 'Mr. Adeoye Juwon'
+      };
+      var seen = Object.create(null);
       return certificationCards.filter(function (card) {
-        var text = cleanText(card.textContent).toLowerCase();
-        var key = name.replace(/^(Mr\.|Mrs\.|Miss|Ms\.)\s*/i, '').toLowerCase();
-        if (key.length < 5) return false;
-        if (text.includes(key)) return true;
-        var tokens = key.split(/\s+/).filter(function (part) { return part.length > 5; });
-        return tokens.some(function (part) { return text.includes(part); });
+        var image = card.querySelector('img');
+        if (!image) return false;
+        var filename = decodeURIComponent((image.getAttribute('src') || '').split('/').pop());
+        if (exactOwners[filename] !== name || seen[filename]) return false;
+        seen[filename] = true;
+        return true;
       });
     }
     function openCertificateViewer(certificate) {
@@ -270,13 +353,13 @@
       if (!viewer) {
         viewer = document.createElement('div');
         viewer.id = 'de-impresa-certificate-viewer';
-        viewer.className = 'fixed inset-0 z-[120] items-center justify-center bg-black/75 p-3 sm:p-6';
+        viewer.className = 'fixed inset-0 z-[120] items-center justify-center bg-black/85 p-1 sm:p-3';
         viewer.style.display = 'none';
         viewer.innerHTML = '<div class="absolute inset-0" data-certificate-close="true" aria-hidden="true"></div>' +
-          '<div role="dialog" aria-modal="true" aria-labelledby="de-impresa-certificate-title" tabindex="-1" class="relative z-10 flex max-h-[92vh] w-full max-w-4xl flex-col overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl">' +
-            '<div class="flex items-start justify-between gap-4 border-b border-border p-4 sm:p-6"><div><p id="de-impresa-certificate-issuer" class="text-xs font-semibold uppercase tracking-[0.2em] text-primary sm:text-sm"></p><h3 id="de-impresa-certificate-title" class="mt-2 font-display text-xl font-bold leading-snug text-foreground sm:text-2xl"></h3></div><button type="button" data-certificate-close="true" aria-label="Close certificate" class="shrink-0 rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground">✕</button></div>' +
-            '<div class="flex min-h-0 items-center justify-center bg-muted/30 p-3 sm:p-6"><img id="de-impresa-certificate-image" class="block max-h-[65vh] w-auto max-w-full object-contain" alt=""></div>' +
-            '<div id="de-impresa-certificate-description" class="space-y-2 p-4 text-sm leading-6 text-muted-foreground sm:p-6 sm:text-base"></div>' +
+          '<div role="dialog" aria-modal="true" aria-labelledby="de-impresa-certificate-title" tabindex="-1" class="relative z-10 flex max-h-[98vh] w-[98vw] max-w-[1800px] flex-col overflow-y-auto rounded-xl border border-border bg-card shadow-2xl">' +
+            '<div class="flex items-start justify-between gap-4 border-b border-border p-3 sm:p-5"><div><p id="de-impresa-certificate-issuer" class="text-xs font-semibold uppercase tracking-[0.2em] text-primary sm:text-sm"></p><h3 id="de-impresa-certificate-title" class="mt-1 font-display text-lg font-bold leading-snug text-foreground sm:text-2xl"></h3></div><button type="button" data-certificate-close="true" aria-label="Close certificate" class="shrink-0 rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground">✕</button></div>' +
+            '<div class="flex w-full items-center justify-center bg-muted/20 p-1 sm:p-3"><img id="de-impresa-certificate-image" class="block h-auto max-h-[82vh] w-full object-contain" alt=""></div>' +
+            '<div id="de-impresa-certificate-description" class="space-y-2 p-3 text-sm leading-6 text-muted-foreground sm:p-5 sm:text-base"></div>' +
           '</div>';
         document.body.appendChild(viewer);
         viewer.addEventListener('click', function (event) {
@@ -332,7 +415,7 @@
       areas.forEach(function (area) {
         var li = document.createElement('li');
         li.className = 'flex items-start gap-2.5 text-sm text-foreground';
-        li.innerHTML = '<span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-primary/25 bg-primary/10 text-primary" aria-hidden="true">✓</span>';
+        li.innerHTML = '<span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-primary/25 bg-primary/10 text-primary" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>';
         var label = document.createElement('span');
         label.textContent = area;
         li.appendChild(label);
@@ -345,23 +428,39 @@
       certs.forEach(function (card) {
         var source = card.querySelector('img');
         var title = card.querySelector('h3');
-        var issuer = card.querySelector('p');
-        var tile = document.createElement('button');
-        tile.type = 'button';
-        tile.className = 'group w-full overflow-hidden rounded-xl border border-border bg-background text-left transition hover:border-primary/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary';
-        var certTitleText = title ? cleanText(title.textContent) : 'Certificate';
-        var issuerTextValue = issuer ? cleanText(issuer.textContent) : 'De Impresa Globals';
-        var detailParagraphs = Array.from(card.querySelectorAll('p')).slice(1).map(function (node) {
+        var paragraphs = Array.from(card.querySelectorAll('p')).map(function (node) {
           return cleanText(node.textContent);
         }).filter(Boolean);
-        if (source) {
-          var certImage = document.createElement('img');
-          certImage.src = source.getAttribute('src');
-          certImage.alt = source.alt || certTitleText + ' certificate';
-          certImage.loading = 'lazy';
-          certImage.className = 'block h-auto max-h-52 w-full bg-muted object-contain p-2 sm:max-h-60';
-          tile.appendChild(certImage);
-        }
+        var certTitleText = title ? cleanText(title.textContent) : 'Certificate';
+        var issuerTextValue = paragraphs[0] || 'De Impresa Globals';
+        var detailParagraphs = paragraphs.slice(1);
+        if (!source) return;
+        var tile = document.createElement('div');
+        tile.className = 'overflow-hidden rounded-xl border border-border bg-background';
+        var imageButton = document.createElement('button');
+        imageButton.type = 'button';
+        imageButton.className = 'group relative block w-full cursor-zoom-in bg-muted/30 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary';
+        imageButton.setAttribute('aria-label', 'View ' + certTitleText + ' in full width');
+        var certImage = document.createElement('img');
+        certImage.src = source.getAttribute('src');
+        certImage.alt = source.alt || certTitleText + ' certificate';
+        certImage.loading = 'lazy';
+        certImage.className = 'block h-auto max-h-56 w-full object-contain p-2 transition group-hover:scale-[1.01] sm:max-h-64';
+        imageButton.appendChild(certImage);
+        var zoomHint = document.createElement('span');
+        zoomHint.className = 'absolute bottom-3 right-3 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-primary shadow';
+        zoomHint.textContent = 'Click image to view full width';
+        imageButton.appendChild(zoomHint);
+        imageButton.addEventListener('click', function () {
+          openCertificateViewer({
+            image: source.getAttribute('src'),
+            alt: source.alt,
+            issuer: issuerTextValue,
+            title: certTitleText,
+            description: detailParagraphs
+          });
+        });
+        tile.appendChild(imageButton);
         var copy = document.createElement('div');
         copy.className = 'space-y-2 p-4 sm:p-5';
         var issuerLabel = document.createElement('p');
@@ -378,20 +477,7 @@
           descriptionText.textContent = detail;
           copy.appendChild(descriptionText);
         });
-        var hint = document.createElement('p');
-        hint.className = 'pt-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary';
-        hint.textContent = 'View certificate in full size';
-        copy.appendChild(hint);
         tile.appendChild(copy);
-        tile.addEventListener('click', function () {
-          openCertificateViewer({
-            image: source ? source.getAttribute('src') : '',
-            alt: source ? source.alt : certTitleText,
-            issuer: issuerTextValue,
-            title: certTitleText,
-            description: detailParagraphs
-          });
-        });
         certList.appendChild(tile);
       });
       certSection.hidden = certs.length === 0;
